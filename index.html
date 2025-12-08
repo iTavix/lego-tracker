@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v5.2</title>
+    <title>iTavix LEGO Manager v5.3</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -12,7 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>tailwind.config = { darkMode: 'class' }</script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -20,11 +19,9 @@
         .blur-content { filter: blur(5px); pointer-events: none; user-select: none; }
         .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #2563eb; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        
         .set-thumb { transition: transform 0.2s ease-in-out; cursor: pointer; background: white; }
         .set-thumb:hover { transform: scale(3.5); z-index: 50; position: relative; border-radius: 4px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); border: 2px solid white; }
         .transition-colors { transition-duration: 200ms; }
@@ -37,8 +34,7 @@
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center">
             <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4">
             <h2 class="text-2xl font-bold text-gray-800">iTavix Manager</h2>
-            <p class="text-gray-500 text-sm mt-2 mb-6">v5.2 (Stable)</p>
-            
+            <p class="text-gray-500 text-sm mt-2 mb-6">v5.3 (Anti-Crash)</p>
             <div class="space-y-4 text-left">
                 <div><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"></div>
                 <div><label class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"></div>
@@ -108,16 +104,16 @@
 
             <div class="p-2 md:p-4 space-y-3 pb-6">
                 <div id="quickStats" class="grid grid-cols-4 gap-2 text-center text-xs md:text-sm bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Set</span> <b class="dark:text-white" id="totalSets">-</b></div>
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Ritiro '25</span> <b class="text-orange-500" id="retiring2025">-</b></div>
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Pezzi</span> <b class="text-blue-500" id="totalPieces">-</b></div>
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Valore</span> <b class="text-green-600 dark:text-green-400" id="totalValue">-</b></div>
+                    <div><span class="text-gray-400 block text-[10px] uppercase">Set</span> <b class="dark:text-white" id="headerSets">-</b></div>
+                    <div><span class="text-gray-400 block text-[10px] uppercase">Ritiro '25</span> <b class="text-orange-500" id="headerRetiring">-</b></div>
+                    <div><span class="text-gray-400 block text-[10px] uppercase">Pezzi</span> <b class="text-blue-500" id="headerPieces">-</b></div>
+                    <div><span class="text-gray-400 block text-[10px] uppercase">Valore</span> <b class="text-green-600 dark:text-green-400" id="headerValore">-</b></div>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-2">
                     <div class="relative flex-1">
                         <i data-lucide="search" class="absolute left-3 top-2.5 text-gray-400 w-4 h-4"></i>
-                        <input type="text" id="searchInput" placeholder="Cerca..." class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:ring-1 focus:ring-blue-500 outline-none bg-white dark:bg-gray-800 dark:text-white">
+                        <input type="text" id="searchInput" placeholder="Cerca..." class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:ring-1 focus:ring-purple-500 outline-none bg-white dark:bg-gray-800 dark:text-white">
                     </div>
                     <select id="themeFilter" class="p-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 dark:text-white outline-none w-full md:w-auto"><option value="all">Tutti i Temi</option></select>
                     <select id="yearFilter" class="p-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 dark:text-white outline-none w-full md:w-auto"><option value="all">Tutti gli Anni</option></select>
@@ -129,12 +125,12 @@
                             <tr>
                                 <th class="p-3 text-center w-28">Stato</th>
                                 <th class="p-3 text-center w-14">Img</th>
-                                <th class="p-3 cursor-pointer hover:text-blue-500" onclick="sortTable('cod')">Cod</th>
-                                <th class="p-3 cursor-pointer hover:text-blue-500" onclick="sortTable('theme')">Tema</th>
-                                <th class="p-3 cursor-pointer hover:text-blue-500" onclick="sortTable('set_name')">Nome</th>
-                                <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('pieces')">Pezzi</th>
-                                <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('price')">Prezzo</th>
-                                <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('retirement_date')">Ritiro</th>
+                                <th class="p-3 cursor-pointer hover:text-purple-500" onclick="sortTable('cod')">Cod</th>
+                                <th class="p-3 cursor-pointer hover:text-purple-500" onclick="sortTable('theme')">Tema</th>
+                                <th class="p-3 cursor-pointer hover:text-purple-500" onclick="sortTable('set_name')">Nome</th>
+                                <th class="p-3 text-right cursor-pointer hover:text-purple-500" onclick="sortTable('pieces')">Pezzi</th>
+                                <th class="p-3 text-right cursor-pointer hover:text-purple-500" onclick="sortTable('price')">Prezzo</th>
+                                <th class="p-3 text-right cursor-pointer hover:text-purple-500" onclick="sortTable('retirement_date')">Ritiro</th>
                                 <th class="p-3 text-center w-24">Mercato</th>
                             </tr>
                         </thead>
@@ -145,9 +141,7 @@
         </main>
 
         <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500">
-                <span class="font-bold text-gray-600 dark:text-gray-300">iTavix v5.2</span> • Aggiornato: <span id="lastUpdateDate">-</span>
-            </p>
+            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v5.3</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
         </footer>
     </div>
 
@@ -173,11 +167,15 @@
             } catch (e) { alert("Config Error"); }
         });
 
-        // --- FUNZIONE SICURA PER EVITARE CRASH "NULL IS NOT AN OBJECT" ---
-        function safeSetText(id, text) {
+        // --- FUNZIONE SALVAVITA (SAFE UPDATE) ---
+        // Se un elemento non esiste, non crasha, ma ignora.
+        function safeUpdate(id, value) {
             const el = document.getElementById(id);
-            if (el) el.innerText = text;
-            // Se non trova l'elemento, non fa nulla (così non crasha)
+            if (el) {
+                el.innerText = value;
+            } else {
+                console.warn(`Elemento HTML mancante: ${id}`);
+            }
         }
 
         function initDarkMode() {
@@ -212,15 +210,11 @@
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const msgBox = document.getElementById('authMessage');
-            
             msgBox.classList.add('hidden');
             if(!email || !password) return showAuthMsg("Inserisci credenziali", true);
 
             try {
-                const { data, error } = type === 'login' 
-                    ? await supabase.auth.signInWithPassword({ email, password })
-                    : await supabase.auth.signUp({ email, password });
-
+                const { data, error } = type === 'login' ? await supabase.auth.signInWithPassword({ email, password }) : await supabase.auth.signUp({ email, password });
                 if (error) throw error;
                 if (type === 'signup' && !data.session) showAuthMsg("Registrazione OK! Controlla email.", false);
                 else unlockApp(data.user.email);
@@ -238,14 +232,11 @@
             currentUserEmail = email;
             document.getElementById('loginOverlay').classList.add('opacity-0', 'pointer-events-none');
             setTimeout(() => document.getElementById('loginOverlay').style.display = 'none', 500);
-            
             document.getElementById('appContent').classList.remove('blur-content', 'opacity-50');
             document.getElementById('appContent').classList.add('opacity-100');
             document.getElementById('userEmailDisplay').innerHTML = `Utente: <b>${email}</b>`;
             
-            Promise.all([loadLibrary(), loadLastUpdateDate(), fetchAllData()]).then(() => {
-                updateCharts();
-            });
+            Promise.all([loadLibrary(), loadLastUpdateDate(), fetchAllData()]).then(() => updateCharts()).catch(console.error);
         }
 
         async function logout() { await supabase.auth.signOut(); location.reload(); }
@@ -310,7 +301,7 @@
         async function loadLastUpdateDate() {
             try {
                 const { data } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single();
-                if (data) safeSetText('lastUpdateDate', new Date(data.value).toLocaleDateString('it-IT'));
+                if (data) safeUpdate('lastUpdateDate', new Date(data.value).toLocaleDateString('it-IT'));
             } catch(e) {}
         }
 
@@ -342,8 +333,8 @@
                         }
                         const now = new Date().toISOString();
                         await supabase.from('app_settings').upsert({ key: 'last_data_update', value: now });
-                        safeSetText('lastUpdateDate', new Date().toLocaleDateString('it-IT'));
-                        alert(`Caricamento completato!`);
+                        safeUpdate('lastUpdateDate', new Date().toLocaleDateString('it-IT'));
+                        alert(`Completato!`);
                         fetchAllData();
                     } catch (err) { alert("Errore: " + err.message); }
                     e.target.value = '';
@@ -412,7 +403,7 @@
             const btn = document.getElementById('btnToggleFavs');
             const txt = document.getElementById('favBtnText');
             if (showOnlyCollection) {
-                btn.className = "flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition gap-2 text-xs md:text-sm font-bold";
+                btn.className = "flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition gap-2 text-xs md:text-sm font-bold";
                 txt.innerText = "Mostra Tutti";
             } else {
                 btn.className = "flex items-center px-3 py-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-lg hover:bg-yellow-200 transition gap-2 text-xs md:text-sm font-bold";
@@ -422,10 +413,10 @@
         }
 
         function updateDashboardStats() {
-            // USO DELLA FUNZIONE SICURA
-            safeSetText('totalSets', filteredData.length.toLocaleString());
-            safeSetText('retiring2025', filteredData.filter(d => d._date.getFullYear() === 2025).length);
-            safeSetText('totalPieces', filteredData.reduce((a,b) => a+(b.pieces||0), 0).toLocaleString());
+            // USO safeUpdate PER EVITARE CRASH
+            safeUpdate('headerSets', filteredData.length.toLocaleString());
+            safeUpdate('headerRetiring', filteredData.filter(d => d._date.getFullYear() === 2025).length);
+            safeUpdate('headerPieces', filteredData.reduce((a,b) => a+(b.pieces||0), 0).toLocaleString());
             
             let totalVal = 0;
             let collectionPieces = 0;
@@ -438,10 +429,10 @@
             });
             const valString = totalVal > 0 ? `€ ${totalVal.toLocaleString('it-IT', {minimumFractionDigits: 0})}` : '-';
             
-            // Aggiorno tutti i campi possibili con sicurezza
-            safeSetText('totalValue', valString);
-            safeSetText('dashTotalValue', valString);
-            safeSetText('dashTotalPieces', collectionPieces.toLocaleString());
+            // AGGIORNO GLI ID CORRETTI E SICURI
+            safeUpdate('headerValore', valString);
+            safeUpdate('dashTotalValue', valString);
+            safeUpdate('dashTotalPieces', collectionPieces.toLocaleString());
         }
 
         function updateCharts() {
