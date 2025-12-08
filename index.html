@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iTavix LEGO Tracker v4.6 (Stable)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .blur-content { filter: blur(5px); pointer-events: none; user-select: none; }
+        .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #2563eb; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        .heart-btn { transition: transform 0.2s; }
+        .heart-btn:active { transform: scale(1.3); }
+        .heart-filled { fill: #ef4444; color: #ef4444; }
+        .set-thumb { transition: transform 0.2s ease-in-out, box-shadow 0.2s; cursor: pointer; background: white; }
+        .set-thumb:hover { transform: scale(3.5); z-index: 50; position: relative; border-radius: 4px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #e5e7eb; }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col relative bg-gray-100">
+
+    <div id="loginOverlay" class="fixed inset-0 z-[100] bg-gray-900 flex items-center justify-center transition-opacity duration-500">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div class="text-center mb-6">
+                <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">iTavix Cloud</h2>
+                <p class="text-gray-500 text-sm mt-2">Area Riservata</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="tua@email.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••">
+                </div>
+                
+                <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium"></div>
+
+                <div class="flex gap-3 pt-2">
+                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition active:scale-95 shadow-md">Accedi</button>
+                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition active:scale-95 shadow-sm">Registrati</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="appContent" class="h-full flex flex-col p-4 md:p-6 gap-4 blur-content transition-all duration-500 opacity-50">
+        
+        <div class="flex-none space-y-4">
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="shrink-0">
+                        <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-12 h-12 object-contain hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">iTavix LEGO Tracker</h1>
+                        <p class="text-gray-500 text-xs" id="userEmailDisplay">In attesa di login...</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <button id="btnToggleFavs" onclick="toggleViewFavorites()" class="flex items-center justify-center px-4 py-2 bg-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-500 transition gap-2 font-bold w-full sm:w-auto shadow-sm">
+                        <i data-lucide="star" class="w-4 h-4"></i><span id="favBtnText">I Miei Preferiti</span>
+                    </button>
+                    <label class="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition gap-2 font-medium w-full sm:w-auto select-none shadow-sm">
+                        <i data-lucide="upload-cloud" class="w-4 h-4"></i><span id="uploadLabel">Carica CSV</span>
+                        <input type="file" id="csvInput" accept=".csv" class="hidden">
+                    </label>
+                    <button id="btnDownload" onclick="exportToCSV()" class="hidden flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition gap-2 font-medium w-full sm:w-auto shadow-sm">
+                        <i data-lucide="download" class="w-4 h-4"></i> Scarica
+                    </button>
+                    <button onclick="logout()" class="flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition gap-2 font-medium w-full sm:w-auto shadow-sm">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Esci
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Set Visualizzati</p><p class="text-lg font-bold text-gray-800" id="totalSets">-</p></div>
+                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Ritiro 2025</p><p class="text-lg font-bold text-orange-600" id="retiring2025">-</p></div>
+                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Pezzi Totali</p><p class="text-lg font-bold text-blue-600" id="totalPieces">-</p></div>
+                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Tema Top</p><p class="text-base font-bold text-gray-800 truncate" id="topTheme">-</p></div>
+                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Valore Stimato</p><p class="text-base font-bold text-green-600 truncate" id="totalValue">-</p></div>
+            </div>
+
+            <div class="bg-white p-3 rounded-xl shadow border border-gray-200 flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex-1 relative w-full"><i data-lucide="search" class="absolute left-3 top-3 text-gray-400 w-5 h-5"></i><input type="text" id="searchInput" placeholder="Cerca..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div class="flex gap-3 w-full md:w-auto">
+                    <select id="themeFilter" class="w-full md:w-48 p-2 border border-gray-300 rounded-lg bg-white outline-none"><option value="all">Tutti i Temi</option></select>
+                    <select id="yearFilter" class="w-full md:w-40 p-2 border border-gray-300 rounded-lg bg-white outline-none"><option value="all">Tutti gli Anni</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 bg-white rounded-xl shadow border border-gray-200 overflow-hidden relative min-h-0 flex flex-col">
+            <div id="tableLoader" class="absolute inset-0 bg-white z-20 flex flex-col items-center justify-center"><div class="loader mb-2"></div><p class="text-gray-500 text-sm animate-pulse" id="loadingText">Sincronizzazione...</p></div>
+            <div class="flex-1 overflow-auto custom-scroll">
+                <table class="w-full text-left border-collapse min-w-[800px]">
+                    <thead class="bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+                        <tr>
+                            <th class="p-4 text-center w-12 text-xs font-bold text-gray-500 uppercase"><i data-lucide="heart" class="w-4 h-4 mx-auto"></i></th>
+                            <th class="p-4 text-center w-16 text-xs font-bold text-gray-500 uppercase">Img</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('cod')">Cod</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('theme')">Tema</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('set_name')">Nome</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('pieces')">Pezzi</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('price')">Prezzo</th>
+                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('retirement_date')">Ritiro</th>
+                            <th class="p-4 text-center w-16 text-xs font-bold text-gray-500 uppercase">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="flex-none bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center">
+            <p class="text-xs text-gray-500"><span class="font-bold text-gray-700">iTavix LEGO Tracker v4.6</span> | Ultimo aggiornamento dati: <span id="lastUpdateDate" class="font-medium text-gray-600">Caricamento...</span></p>
+        </footer>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://vdihgygqxjuhnppwktlq.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkaWhneWdxeGp1aG5wcHdrdGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNDYyNzYsImV4cCI6MjA4MDYyMjI3Nn0.A-emTugF0lfrfHlIm7M6HXUFNwaDs_TRPE3NvLqJo2o';
+
+        let supabase;
+        let allData = [];
+        let filteredData = [];
+        let favoritesSet = new Set();
+        let currentSort = { key: 'retirement_date', direction: 'asc' };
+        let showOnlyFavorites = false;
+        let currentUserEmail = "";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                checkSession();
+            } catch (e) { alert("Config Error"); }
+        });
+
+        async function checkSession() {
+            try {
+                const { data } = await supabase.auth.getSession();
+                if (data.session) unlockApp(data.session.user.email);
+            } catch (e) { console.log("Session check fail", e); }
+        }
+
+        document.getElementById('password').addEventListener('keypress', function (e) { if (e.key === 'Enter') handleAuth('login'); });
+        document.getElementById('btnLogin').addEventListener('click', () => handleAuth('login'));
+        document.getElementById('btnSignup').addEventListener('click', () => handleAuth('signup'));
+
+        async function handleAuth(type) {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const msgBox = document.getElementById('authMessage');
+            const btn = type === 'login' ? document.getElementById('btnLogin') : document.getElementById('btnSignup');
+
+            msgBox.classList.add('hidden');
+            if(!email || !password) {
+                msgBox.innerText = "Inserisci email e password";
+                msgBox.className = "p-3 rounded-lg text-sm text-center font-medium bg-red-100 text-red-700 block";
+                msgBox.classList.remove('hidden'); return;
+            }
+
+            const originalText = btn.innerText;
+            btn.innerText = "..."; btn.disabled = true;
+            
+            try {
+                let result;
+                if (type === 'login') result = await supabase.auth.signInWithPassword({ email, password });
+                else result = await supabase.auth.signUp({ email, password });
+
+                if (result.error) throw result.error;
+                
+                if (type === 'signup' && !result.data.session) {
+                    msgBox.innerText = "Registrazione OK! Controlla la tua email.";
+                    msgBox.className = "p-3 rounded-lg text-sm text-center font-medium bg-green-100 text-green-700 block";
+                    msgBox.classList.remove('hidden');
+                } else unlockApp(result.data.user.email);
+            } catch (error) {
+                msgBox.innerText = error.message;
+                msgBox.className = "p-3 rounded-lg text-sm text-center font-medium bg-red-100 text-red-700 block";
+                msgBox.classList.remove('hidden');
+            } finally { btn.innerText = originalText; btn.disabled = false; }
+        }
+
+        function unlockApp(email) {
+            currentUserEmail = email;
+            document.getElementById('loginOverlay').classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => { document.getElementById('loginOverlay').style.display = 'none'; }, 500);
+            const app = document.getElementById('appContent');
+            app.classList.remove('blur-content', 'opacity-50');
+            app.classList.add('opacity-100');
+            document.getElementById('userEmailDisplay').innerHTML = `Utente: <b>${email}</b>`;
+            
+            // Caricamento parallelo sicuro
+            Promise.all([
+                loadFavorites(),
+                loadLastUpdateDate(),
+                fetchAllData()
+            ]).catch(console.error);
+        }
+
+        async function logout() { await supabase.auth.signOut(); location.reload(); }
+
+        // --- FAVORITES ---
+        async function loadFavorites() {
+            const { data, error } = await supabase.from('user_favorites').select('set_cod').eq('user_email', currentUserEmail);
+            if (!error && data) favoritesSet = new Set(data.map(item => item.set_cod));
+        }
+
+        async function toggleFavorite(cod) {
+            const btn = document.getElementById(`fav-btn-${cod}`);
+            const icon = btn.querySelector('svg');
+            
+            if (favoritesSet.has(cod)) {
+                favoritesSet.delete(cod);
+                icon.classList.remove('heart-filled', 'fill-red-500', 'text-red-500');
+                icon.classList.add('text-gray-400');
+                await supabase.from('user_favorites').delete().match({ user_email: currentUserEmail, set_cod: cod });
+            } else {
+                favoritesSet.add(cod);
+                icon.classList.remove('text-gray-400');
+                icon.classList.add('heart-filled', 'fill-red-500', 'text-red-500');
+                await supabase.from('user_favorites').insert({ user_email: currentUserEmail, set_cod: cod });
+            }
+            if (showOnlyFavorites) applyFilters();
+            else updateStats();
+        }
+
+        function toggleViewFavorites() {
+            showOnlyFavorites = !showOnlyFavorites;
+            const btn = document.getElementById('btnToggleFavs');
+            const txt = document.getElementById('favBtnText');
+            const dlBtn = document.getElementById('btnDownload');
+            
+            if (showOnlyFavorites) {
+                btn.classList.remove('bg-yellow-400', 'text-yellow-900');
+                btn.classList.add('bg-red-500', 'text-white', 'hover:bg-red-600');
+                txt.innerText = "Mostra Tutti";
+                dlBtn.classList.remove('hidden');
+            } else {
+                btn.classList.add('bg-yellow-400', 'text-yellow-900');
+                btn.classList.remove('bg-red-500', 'text-white', 'hover:bg-red-600');
+                txt.innerText = "I Miei Preferiti";
+                dlBtn.classList.add('hidden');
+            }
+            applyFilters();
+        }
+
+        // --- METADATA (ROBUST) ---
+        async function loadLastUpdateDate() {
+            try {
+                const { data, error } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single();
+                if (data && data.value) document.getElementById('lastUpdateDate').innerText = new Date(data.value).toLocaleDateString('it-IT');
+                else document.getElementById('lastUpdateDate').innerText = "N/A";
+            } catch (e) {
+                console.warn("Tabella app_settings mancante?", e);
+                document.getElementById('lastUpdateDate').innerText = "N/A (Tabella mancante)";
+            }
+        }
+
+        async function saveLastUpdateDate() {
+            try {
+                const now = new Date().toISOString();
+                await supabase.from('app_settings').upsert({ key: 'last_data_update', value: now });
+                document.getElementById('lastUpdateDate').innerText = new Date().toLocaleDateString('it-IT');
+            } catch (e) { console.error("Impossibile salvare data", e); }
+        }
+
+        // --- FETCH ---
+        async function fetchAllData() {
+            const loader = document.getElementById('tableLoader');
+            const loadText = document.getElementById('loadingText');
+            let allRows = [];
+            let from = 0;
+            const step = 1000;
+            let keep = true;
+
+            try {
+                while(keep) {
+                    loadText.innerText = `Scaricamento dati (${from})...`;
+                    const { data, error } = await supabase.from('lego_sets').select('*').range(from, from + step - 1);
+                    if (error) throw error;
+                    if (data.length > 0) {
+                        allRows = allRows.concat(data);
+                        from += step;
+                        if (data.length < step) keep = false;
+                    } else keep = false;
+                }
+                processData(allRows);
+            } catch (e) { alert("Errore dati: " + e.message); } 
+            finally { loader.classList.add('hidden'); }
+        }
+
+        // --- UPLOAD CSV ---
+        document.getElementById('csvInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const label = document.getElementById('uploadLabel');
+            label.innerText = "Analisi...";
+            
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                delimiter: "", 
+                complete: async function(results) {
+                    try {
+                        if (!results.data || results.data.length === 0) throw new Error("File vuoto");
+                        const sample = results.data[0];
+                        const keys = Object.keys(sample);
+                        
+                        const keyMap = {
+                            cod: keys.find(k => k.toLowerCase() === 'cod'),
+                            theme: keys.find(k => k.toLowerCase() === 'theme'),
+                            sub_theme: keys.find(k => k.toLowerCase().includes('sub') && k.toLowerCase().includes('theme')),
+                            set_name: keys.find(k => k.toLowerCase() === 'set name' || k.toLowerCase() === 'set_name'),
+                            pieces: keys.find(k => k.toLowerCase() === 'pieces'),
+                            price: keys.find(k => k.toLowerCase() === 'price' || k.toLowerCase() === 'costo' || k.toLowerCase() === 'msrp'),
+                            date: keys.find(k => k.toLowerCase() === 'retirement date' || k.toLowerCase() === 'retirement_date')
+                        };
+
+                        if(!keyMap.cod) throw new Error("Colonna 'Cod' mancante.");
+
+                        const rows = results.data.map(row => {
+                            let rawPrice = row[keyMap.price] || '0';
+                            if(typeof rawPrice === 'string') rawPrice = rawPrice.replace('€','').replace(',','.').trim();
+                            
+                            return {
+                                cod: parseInt(row[keyMap.cod]),
+                                theme: row[keyMap.theme],
+                                sub_theme: row[keyMap.sub_theme] || "",
+                                set_name: row[keyMap.set_name],
+                                pieces: parseInt(row[keyMap.pieces] || 0),
+                                price: parseFloat(rawPrice || 0),
+                                retirement_date: row[keyMap.date]
+                            };
+                        }).filter(r => r.cod && !isNaN(r.cod));
+
+                        const BATCH = 50;
+                        for(let i=0; i<rows.length; i+=BATCH) {
+                            label.innerText = `Up ${Math.min(i+BATCH, rows.length)}/${rows.length}`;
+                            const { error } = await supabase.from('lego_sets').upsert(rows.slice(i, i+BATCH), { onConflict: 'cod' });
+                            if(error) throw error;
+                        }
+                        
+                        await saveLastUpdateDate();
+                        alert(`Caricamento completato! Inseriti ${rows.length} set.`);
+                        fetchAllData();
+                    } catch (err) { alert("Errore upload: " + err.message); } 
+                    finally { label.innerText = "Carica CSV"; e.target.value = ''; }
+                }
+            });
+        });
+
+        // --- EXPORT ---
+        function exportToCSV() {
+            if (filteredData.length === 0) { alert("Nessun dato da esportare!"); return; }
+            const filename = showOnlyFavorites ? `itavix_preferiti.csv` : `itavix_full.csv`;
+            const dataToExport = filteredData.map(row => ({
+                Codice: row.cod, Tema: row.theme, Nome: row.set_name, Pezzi: row.pieces, Prezzo: row._price, Ritiro: row.retirement_date, Link: `https://www.lego.com/it-it/product/${row.cod}`
+            }));
+            const csv = Papa.unparse(dataToExport);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.click();
+        }
+
+        // --- PROCESS & RENDER ---
+        function processData(data) {
+            allData = data.map(item => ({
+                ...item,
+                _date: new Date(item.retirement_date || '2099-12-31'),
+                _search: ((item.set_name||'') + ' ' + item.cod).toLowerCase(),
+                _price: parseFloat(item.price || 0),
+                _img: `https://images.brickset.com/sets/images/${item.cod}-1.jpg`
+            }));
+            
+            const themes = [...new Set(allData.map(d => d.theme).filter(Boolean))].sort();
+            const years = [...new Set(allData.map(d => d._date.getFullYear()))].sort().filter(y => !isNaN(y) && y < 2099);
+            
+            const ts = document.getElementById('themeFilter');
+            ts.innerHTML = '<option value="all">Tutti i Temi</option>' + themes.map(t => `<option value="${t}">${t}</option>`).join('');
+            const ys = document.getElementById('yearFilter');
+            ys.innerHTML = '<option value="all">Tutti gli Anni</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const s = document.getElementById('searchInput').value.toLowerCase();
+            const t = document.getElementById('themeFilter').value;
+            const y = document.getElementById('yearFilter').value;
+
+            filteredData = allData.filter(d => {
+                const baseMatch = (d._search.includes(s)) && 
+                                  (t === 'all' || d.theme === t) && 
+                                  (y === 'all' || d._date.getFullYear().toString() === y);
+                if (showOnlyFavorites) return baseMatch && favoritesSet.has(d.cod);
+                return baseMatch;
+            });
+            render();
+        }
+
+        function render() {
+            document.getElementById('totalSets').innerText = filteredData.length.toLocaleString();
+            document.getElementById('retiring2025').innerText = filteredData.filter(d => d._date.getFullYear() === 2025).length.toLocaleString();
+            document.getElementById('totalPieces').innerText = filteredData.reduce((a,b) => a+(b.pieces||0), 0).toLocaleString();
+            const totalVal = filteredData.reduce((a,b) => a + b._price, 0);
+            document.getElementById('totalValue').innerText = totalVal > 0 ? `€ ${totalVal.toLocaleString('it-IT', {minimumFractionDigits: 2})}` : '-';
+
+            if(filteredData.length > 0) {
+                const c = {}; filteredData.forEach(d => c[d.theme] = (c[d.theme]||0)+1);
+                document.getElementById('topTheme').innerText = Object.keys(c).reduce((a,b) => c[a]>c[b]?a:b);
+            } else document.getElementById('topTheme').innerText = "-";
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            filteredData.sort((a,b) => {
+                let vA = a[currentSort.key], vB = b[currentSort.key];
+                if(currentSort.key === 'retirement_date') { vA=a._date; vB=b._date; }
+                if(currentSort.key === 'price') { vA=a._price; vB=b._price; }
+                return (vA < vB ? -1 : 1) * (currentSort.direction === 'asc' ? 1 : -1);
+            });
+
+            const frag = document.createDocumentFragment();
+            filteredData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-blue-50 transition border-b border-gray-100 last:border-0";
+                const isSoon = row._date.getFullYear() <= new Date().getFullYear();
+                const url = `https://www.lego.com/it-it/product/${row.cod}`;
+                const isFav = favoritesSet.has(row.cod);
+                const heartClass = isFav ? "heart-filled fill-red-500 text-red-500" : "text-gray-400 hover:text-red-300";
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center"><button id="fav-btn-${row.cod}" onclick="toggleFavorite(${row.cod})" class="heart-btn focus:outline-none"><i data-lucide="heart" class="w-5 h-5 ${heartClass}"></i></button></td>
+                    <td class="p-2 text-center relative group"><img src="${row._img}" loading="lazy" class="w-10 h-10 object-contain set-thumb mx-auto" onerror="this.style.display='none'"></td>
+                    <td class="p-3 text-sm font-mono text-blue-600"><a href="${url}" target="_blank">${row.cod}</a></td>
+                    <td class="p-3 text-sm"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-bold">${row.theme}</span></td>
+                    <td class="p-3 text-sm font-medium text-gray-800">${row.set_name}</td>
+                    <td class="p-3 text-sm text-right text-gray-500">${row.pieces||0}</td>
+                    <td class="p-3 text-sm text-right font-medium text-green-700">${row._price > 0 ? '€ '+row._price.toFixed(2) : '-'}</td>
+                    <td class="p-3 text-sm text-right font-medium ${isSoon ? 'text-red-600' : 'text-gray-600'}">${row.retirement_date}</td>
+                    <td class="p-3 text-center"><a href="${url}" target="_blank" class="text-blue-500"><i data-lucide="external-link" class="w-4 h-4 inline"></i></a></td>
+                `;
+                frag.appendChild(tr);
+            });
+            tbody.appendChild(frag);
+            lucide.createIcons();
+        }
+
+        function sortTable(k) {
+            if(currentSort.key === k) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            else { currentSort.key = k; currentSort.direction = 'asc'; }
+            render();
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('themeFilter').addEventListener('change', applyFilters);
+        document.getElementById('yearFilter').addEventListener('change', applyFilters);
+    </script>
+</body>
+</html>
