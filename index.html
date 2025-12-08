@@ -3,54 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v5.0</title>
-    
+    <title>iTavix LEGO Tracker v4.9 (Safe)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        tailwind.config = { darkMode: 'class' }
-    </script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .blur-content { filter: blur(5px); pointer-events: none; user-select: none; }
         .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #2563eb; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
+        /* Scrollbar personalizzata */
         .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
+        .heart-btn { transition: transform 0.2s; }
+        .heart-btn:active { transform: scale(1.3); }
+        .heart-filled { fill: #ef4444; color: #ef4444; }
         .set-thumb { transition: transform 0.2s ease-in-out; cursor: pointer; background: white; }
-        .set-thumb:hover { transform: scale(3.5); z-index: 50; position: relative; border-radius: 4px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); border: 2px solid white; }
-
-        /* Dark Mode Transitions */
-        .transition-colors { transition-property: background-color, border-color, color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 200ms; }
+        .set-thumb:hover { transform: scale(3.5); z-index: 50; position: relative; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
     </style>
 </head>
-
-<body class="h-screen w-screen overflow-hidden flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
+<body class="h-screen w-screen overflow-hidden flex flex-col bg-gray-100 text-gray-800">
 
     <div id="loginOverlay" class="fixed inset-0 z-[100] bg-gray-900 flex items-center justify-center transition-opacity duration-500">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center">
-            <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4">
-            <h2 class="text-2xl font-bold text-gray-800">iTavix Manager</h2>
-            <p class="text-gray-500 text-sm mt-2 mb-6">Gestione Collezione & Investimenti</p>
-            
-            <div class="space-y-4 text-left">
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"></div>
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"></div>
-                <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium"></div>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4">
+            <div class="text-center mb-6">
+                <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">iTavix Cloud</h2>
+                <p class="text-gray-500 text-sm mt-2">Area Riservata</p>
+            </div>
+            <div class="space-y-4">
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="tua@email.com"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••"></div>
+                <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium bg-red-100 text-red-700"></div>
                 <div class="flex gap-3 pt-2">
-                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">Accedi</button>
-                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition">Registrati</button>
+                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition active:scale-95 shadow-md">Accedi</button>
+                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition active:scale-95 shadow-sm">Registrati</button>
                 </div>
             </div>
         </div>
@@ -58,118 +51,106 @@
 
     <div id="appContent" class="flex flex-col h-full blur-content transition-all duration-500 opacity-50">
         
-        <header class="flex-none bg-white dark:bg-gray-800 shadow-sm z-30 relative px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
+        <header class="flex-none bg-white shadow-sm z-30 relative px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3 border-b border-gray-200">
             <div class="flex items-center gap-3 w-full md:w-auto">
-                <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-10 h-10 object-contain">
+                <div class="shrink-0">
+                    <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-10 h-10 object-contain">
+                </div>
                 <div>
-                    <h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager <span class="text-xs font-normal text-blue-500">v5.0</span></h1>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p>
+                    <h1 class="text-lg md:text-xl font-bold text-gray-800 leading-tight">iTavix LEGO Tracker</h1>
+                    <p class="text-[10px] md:text-xs text-gray-500" id="userEmailDisplay">In attesa...</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
-                <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
-                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i>
+                <button id="btnToggleFavs" onclick="toggleViewFavorites()" class="flex-shrink-0 flex items-center justify-center px-3 py-2 bg-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-500 transition gap-1.5 font-bold text-xs md:text-sm shadow-sm">
+                    <i data-lucide="star" class="w-3.5 h-3.5"></i><span id="favBtnText">Preferiti</span>
                 </button>
-
-                <button onclick="toggleDashboard()" class="flex items-center px-3 py-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 rounded-lg hover:bg-purple-200 transition gap-2 text-xs md:text-sm font-bold">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> <span class="hidden sm:inline">Dashboard</span>
-                </button>
-
-                <button id="btnToggleFavs" onclick="toggleViewFavorites()" class="flex items-center px-3 py-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-lg hover:bg-yellow-200 transition gap-2 text-xs md:text-sm font-bold">
-                    <i data-lucide="box" class="w-4 h-4"></i> <span id="favBtnText">La Mia Collezione</span>
-                </button>
-
-                <label class="p-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition">
-                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                <label class="flex-shrink-0 flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition gap-1.5 font-medium text-xs md:text-sm shadow-sm select-none">
+                    <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i><span>Carica</span>
                     <input type="file" id="csvInput" accept=".csv" class="hidden">
                 </label>
-                
-                <button onclick="exportToCSV()" class="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                    <i data-lucide="download" class="w-4 h-4"></i>
+                <button id="btnDownload" onclick="exportToCSV()" class="hidden flex-shrink-0 flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition gap-1.5 font-medium text-xs md:text-sm shadow-sm">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 </button>
-                
-                <button onclick="logout()" class="p-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 transition">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                <button onclick="logout()" class="flex-shrink-0 flex items-center justify-center px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition gap-1.5 font-medium text-xs md:text-sm shadow-sm ml-auto md:ml-0">
+                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
                 </button>
             </div>
         </header>
 
-        <div id="dashboardPanel" class="hidden flex-none bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 transition-all">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
-                    <h3 class="text-xs font-bold uppercase text-gray-500 mb-2">Composizione Temi (Collezione)</h3>
-                    <div class="h-32"><canvas id="chartThemes"></canvas></div>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm">
-                    <h3 class="text-xs font-bold uppercase text-gray-500 mb-2">Ritiro Set Posseduti</h3>
-                    <div class="h-32"><canvas id="chartRetirement"></canvas></div>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm flex flex-col justify-center text-center">
-                    <p class="text-sm text-gray-500">Valore Stimato Collezione</p>
-                    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1" id="dashTotalValue">€ 0</p>
-                    <p class="text-xs text-gray-400 mt-2">Basato su quantità possedute</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm flex flex-col justify-center text-center">
-                    <p class="text-sm text-gray-500">Totale Pezzi</p>
-                    <p class="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-1" id="dashTotalPieces">0</p>
-                    <p class="text-xs text-gray-400 mt-2">Mattoncini totali</p>
-                </div>
-            </div>
-        </div>
-
-        <main class="flex-1 overflow-y-auto custom-scroll relative bg-gray-50 dark:bg-gray-900">
+        <main class="flex-1 overflow-y-auto custom-scroll relative bg-gray-50">
             
-            <div id="tableLoader" class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-20 flex flex-col items-center justify-center hidden">
+            <div id="tableLoader" class="absolute inset-0 bg-white/80 z-20 flex flex-col items-center justify-center hidden">
                 <div class="loader mb-2"></div>
                 <p class="text-gray-500 text-xs animate-pulse" id="loadingText">Sync...</p>
             </div>
 
-            <div class="p-2 md:p-4 space-y-3 pb-6">
+            <div class="p-2 md:p-4 space-y-3 pb-4">
                 
-                <div id="quickStats" class="grid grid-cols-4 gap-2 text-center text-xs md:text-sm bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Visualizzati</span> <b class="dark:text-white" id="totalSets">-</b></div>
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Ritiro '25</span> <b class="text-orange-500" id="retiring2025">-</b></div>
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Pezzi</span> <b class="text-blue-500" id="totalPieces">-</b></div>
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Top Tema</span> <b class="dark:text-white truncate block" id="topTheme">-</b></div>
-                </div>
-
-                <div class="flex flex-col md:flex-row gap-2">
-                    <div class="relative flex-1">
-                        <i data-lucide="search" class="absolute left-3 top-2.5 text-gray-400 w-4 h-4"></i>
-                        <input type="text" id="searchInput" placeholder="Cerca set, tema, codice..." class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:ring-1 focus:ring-blue-500 outline-none bg-white dark:bg-gray-800 dark:text-white">
+                <div class="grid grid-cols-3 md:grid-cols-5 gap-2">
+                    <div class="bg-white p-2 rounded-lg shadow-sm border border-gray-100 text-center">
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Set</p>
+                        <p class="text-sm md:text-lg font-bold text-gray-800 leading-tight" id="statTotalSets">-</p>
                     </div>
-                    <select id="themeFilter" class="p-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 dark:text-white outline-none w-full md:w-auto"><option value="all">Tutti i Temi</option></select>
-                    <select id="yearFilter" class="p-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 dark:text-white outline-none w-full md:w-auto"><option value="all">Tutti gli Anni</option></select>
+                    <div class="bg-white p-2 rounded-lg shadow-sm border border-gray-100 text-center">
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Ritiro '25</p>
+                        <p class="text-sm md:text-lg font-bold text-orange-600 leading-tight" id="statRetiring">-</p>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg shadow-sm border border-gray-100 text-center">
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Pezzi</p>
+                        <p class="text-sm md:text-lg font-bold text-blue-600 leading-tight" id="statTotalPieces">-</p>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg shadow-sm border border-gray-100 text-center col-span-1">
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Top</p>
+                        <p class="text-xs md:text-lg font-bold text-gray-800 leading-tight truncate px-1" id="statTopTheme">-</p>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg shadow-sm border border-gray-100 text-center col-span-2 md:col-span-1">
+                        <p class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Valore</p>
+                        <p class="text-sm md:text-lg font-bold text-green-600 leading-tight" id="statTotalValue">-</p>
+                    </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto min-h-[400px]">
-                    <table class="w-full text-left border-collapse min-w-[900px]">
-                        <thead class="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 sticky top-0 z-10 text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                <div class="bg-white p-2 rounded-lg shadow-sm border border-gray-100 flex flex-col md:flex-row gap-2">
+                    <div class="relative w-full">
+                        <i data-lucide="search" class="absolute left-3 top-2.5 text-gray-400 w-4 h-4"></i>
+                        <input type="text" id="searchInput" placeholder="Cerca..." class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:ring-1 focus:ring-blue-500 outline-none bg-gray-50">
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <select id="themeFilter" class="w-full md:w-40 p-2 text-sm border border-gray-200 rounded-md bg-gray-50 outline-none"><option value="all">Temi</option></select>
+                        <select id="yearFilter" class="w-full md:w-32 p-2 text-sm border border-gray-200 rounded-md bg-gray-50 outline-none"><option value="all">Anni</option></select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto min-h-[400px]">
+                    <table class="w-full text-left border-collapse min-w-[700px]">
+                        <thead class="bg-gray-100 border-b border-gray-200 sticky top-0 z-10 shadow-sm text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             <tr>
-                                <th class="p-3 text-center w-28">Stato</th>
+                                <th class="p-3 text-center w-10"><i data-lucide="heart" class="w-3.5 h-3.5 mx-auto"></i></th>
                                 <th class="p-3 text-center w-14">Img</th>
-                                <th class="p-3 cursor-pointer hover:text-blue-500" onclick="sortTable('cod')">Cod</th>
-                                <th class="p-3 cursor-pointer hover:text-blue-500" onclick="sortTable('theme')">Tema</th>
-                                <th class="p-3 cursor-pointer hover:text-blue-500" onclick="sortTable('set_name')">Nome</th>
-                                <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('pieces')">Pezzi</th>
-                                <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('price')">Prezzo</th>
-                                <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('retirement_date')">Ritiro</th>
-                                <th class="p-3 text-center w-24">Mercato</th>
+                                <th class="p-3 cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('cod')">Cod</th>
+                                <th class="p-3 cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('theme')">Tema</th>
+                                <th class="p-3 cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('set_name')">Nome</th>
+                                <th class="p-3 text-right cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('pieces')">Pezzi</th>
+                                <th class="p-3 text-right cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('price')">Prezzo</th>
+                                <th class="p-3 text-right cursor-pointer hover:bg-gray-200 transition" onclick="sortTable('retirement_date')">Ritiro</th>
+                                <th class="p-3 text-center w-10">Link</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody" class="divide-y divide-gray-100 dark:divide-gray-700 text-sm text-gray-700 dark:text-gray-200"></tbody>
+                        <tbody id="tableBody" class="divide-y divide-gray-100 text-sm text-gray-700 bg-white"></tbody>
                     </table>
                 </div>
-            </div>
+                
+                <div class="h-6"></div> </div>
         </main>
 
-        <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500">
-                <span class="font-bold text-gray-600 dark:text-gray-300">iTavix v5.0</span> • Aggiornato: <span id="lastUpdateDate">-</span>
+        <footer class="flex-none bg-white p-2 border-t border-gray-200 text-center z-30">
+            <p class="text-[10px] md:text-xs text-gray-400 font-medium">
+                <span class="text-gray-600">iTavix LEGO Tracker v4.9</span> 
+                • Aggiornato: <span id="lastUpdateDate" class="text-gray-600">-</span>
             </p>
         </footer>
+
     </div>
 
     <script>
@@ -179,41 +160,18 @@
         let supabase;
         let allData = [];
         let filteredData = [];
-        // Map: cod -> { status: 'owned'|'wanted', qty: 1 }
-        let userLibrary = new Map();
+        let favoritesSet = new Set();
         let currentSort = { key: 'retirement_date', direction: 'asc' };
-        let showOnlyCollection = false;
+        let showOnlyFavorites = false;
         let currentUserEmail = "";
-        let charts = {};
 
-        // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            initDarkMode();
             try {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 checkSession();
             } catch (e) { alert("Config Error"); }
         });
-
-        function initDarkMode() {
-            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-
-        function toggleDarkMode() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('color-theme', 'light');
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('color-theme', 'dark');
-            }
-            updateCharts();
-        }
 
         async function checkSession() {
             try {
@@ -222,8 +180,7 @@
             } catch (e) { console.log(e); }
         }
 
-        // --- AUTH (Simplified) ---
-        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key==='Enter') handleAuth('login'); });
+        document.getElementById('password').addEventListener('keypress', function (e) { if (e.key === 'Enter') handleAuth('login'); });
         document.getElementById('btnLogin').addEventListener('click', () => handleAuth('login'));
         document.getElementById('btnSignup').addEventListener('click', () => handleAuth('signup'));
 
@@ -231,108 +188,108 @@
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const msgBox = document.getElementById('authMessage');
-            
+            const btn = type === 'login' ? document.getElementById('btnLogin') : document.getElementById('btnSignup');
+
             msgBox.classList.add('hidden');
-            if(!email || !password) return showAuthMsg("Inserisci credenziali", true);
+            if(!email || !password) {
+                msgBox.innerText = "Inserisci email e password";
+                msgBox.className = "p-3 rounded-lg text-sm text-center font-medium bg-red-100 text-red-700 block";
+                msgBox.classList.remove('hidden'); return;
+            }
 
+            const originalText = btn.innerText;
+            btn.innerText = "..."; btn.disabled = true;
+            
             try {
-                const { data, error } = type === 'login' 
-                    ? await supabase.auth.signInWithPassword({ email, password })
-                    : await supabase.auth.signUp({ email, password });
+                let result;
+                if (type === 'login') result = await supabase.auth.signInWithPassword({ email, password });
+                else result = await supabase.auth.signUp({ email, password });
 
-                if (error) throw error;
-                if (type === 'signup' && !data.session) showAuthMsg("Registrazione OK! Controlla email.", false);
-                else unlockApp(data.user.email);
-            } catch (err) { showAuthMsg(err.message, true); }
-        }
-
-        function showAuthMsg(txt, isErr) {
-            const m = document.getElementById('authMessage');
-            m.innerText = txt;
-            m.className = `p-3 rounded-lg text-sm text-center font-medium block ${isErr ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+                if (result.error) throw result.error;
+                
+                if (type === 'signup' && !result.data.session) {
+                    msgBox.innerText = "Registrazione OK! Controlla la tua email.";
+                    msgBox.className = "p-3 rounded-lg text-sm text-center font-medium bg-green-100 text-green-700 block";
+                    msgBox.classList.remove('hidden');
+                } else unlockApp(result.data.user.email);
+            } catch (error) {
+                msgBox.innerText = error.message;
+                msgBox.className = "p-3 rounded-lg text-sm text-center font-medium bg-red-100 text-red-700 block";
+                msgBox.classList.remove('hidden');
+            } finally { btn.innerText = originalText; btn.disabled = false; }
         }
 
         function unlockApp(email) {
             currentUserEmail = email;
             document.getElementById('loginOverlay').classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => document.getElementById('loginOverlay').style.display = 'none', 500);
-            
-            document.getElementById('appContent').classList.remove('blur-content', 'opacity-50');
-            document.getElementById('appContent').classList.add('opacity-100');
+            setTimeout(() => { document.getElementById('loginOverlay').style.display = 'none'; }, 500);
+            const app = document.getElementById('appContent');
+            app.classList.remove('blur-content', 'opacity-50');
+            app.classList.add('opacity-100');
             document.getElementById('userEmailDisplay').innerHTML = `Utente: <b>${email}</b>`;
-            
-            Promise.all([loadLibrary(), loadLastUpdateDate(), fetchAllData()]).then(() => {
-                updateCharts();
-            });
+            Promise.all([loadFavorites(), loadLastUpdateDate(), fetchAllData()]).catch(console.error);
         }
 
         async function logout() { await supabase.auth.signOut(); location.reload(); }
 
-        // --- LIBRARY LOGIC (OWNED/WANTED) ---
-        async function loadLibrary() {
-            const { data, error } = await supabase
-                .from('user_favorites')
-                .select('set_cod, status, quantity')
-                .eq('user_email', currentUserEmail);
-            
-            if (!error && data) {
-                userLibrary = new Map();
-                data.forEach(row => {
-                    userLibrary.set(row.set_cod, { 
-                        status: row.status || 'wanted', 
-                        qty: row.quantity || 1 
-                    });
-                });
-            }
+        async function loadFavorites() {
+            const { data, error } = await supabase.from('user_favorites').select('set_cod').eq('user_email', currentUserEmail);
+            if (!error && data) favoritesSet = new Set(data.map(item => item.set_cod));
         }
 
-        async function updateSetStatus(cod, status) {
-            // Se clicco sullo stesso stato, rimuovo il set (toggle off)
-            const current = userLibrary.get(cod);
-            
-            if (current && current.status === status) {
-                userLibrary.delete(cod);
+        async function toggleFavorite(cod) {
+            const btn = document.getElementById(`fav-btn-${cod}`);
+            const icon = btn.querySelector('svg');
+            if (favoritesSet.has(cod)) {
+                favoritesSet.delete(cod);
+                icon.classList.remove('heart-filled', 'fill-red-500', 'text-red-500');
+                icon.classList.add('text-gray-400');
                 await supabase.from('user_favorites').delete().match({ user_email: currentUserEmail, set_cod: cod });
             } else {
-                const newData = { status: status, qty: current ? current.qty : 1 };
-                userLibrary.set(cod, newData);
-                
-                await supabase.from('user_favorites').upsert({ 
-                    user_email: currentUserEmail, 
-                    set_cod: cod,
-                    status: status,
-                    quantity: newData.qty
-                }, { onConflict: 'user_email, set_cod' });
+                favoritesSet.add(cod);
+                icon.classList.remove('text-gray-400');
+                icon.classList.add('heart-filled', 'fill-red-500', 'text-red-500');
+                await supabase.from('user_favorites').insert({ user_email: currentUserEmail, set_cod: cod });
             }
-            refreshView();
+            if (showOnlyFavorites) applyFilters();
+            else updateStats(); // Aggiorna solo stats se non siamo in vista filtro
         }
 
-        async function updateQty(cod, delta) {
-            const current = userLibrary.get(cod);
-            if (!current) return; // Non dovrebbe accadere
-            
-            let newQty = Math.max(1, current.qty + delta);
-            current.qty = newQty;
-            userLibrary.set(cod, current); // Update local map
-            
-            // Aggiorna solo quantità nel DB
-            await supabase.from('user_favorites').update({ quantity: newQty })
-                .match({ user_email: currentUserEmail, set_cod: cod });
-            
-            render(); // Rerender veloce per aggiornare numero
-            updateDashboardStats(); // Aggiorna valori dashboard
-        }
-
-        function refreshView() {
-            if (showOnlyCollection) applyFilters();
-            else {
-                render(); 
-                updateDashboardStats();
+        function toggleViewFavorites() {
+            showOnlyFavorites = !showOnlyFavorites;
+            const btn = document.getElementById('btnToggleFavs');
+            const txt = document.getElementById('favBtnText');
+            const dlBtn = document.getElementById('btnDownload');
+            if (showOnlyFavorites) {
+                btn.classList.remove('bg-yellow-400', 'text-yellow-900');
+                btn.classList.add('bg-red-500', 'text-white', 'hover:bg-red-600');
+                txt.innerText = "Mostra Tutti";
+                dlBtn.classList.remove('hidden');
+            } else {
+                btn.classList.add('bg-yellow-400', 'text-yellow-900');
+                btn.classList.remove('bg-red-500', 'text-white', 'hover:bg-red-600');
+                txt.innerText = "Preferiti";
+                dlBtn.classList.add('hidden');
             }
-            updateCharts();
+            applyFilters();
         }
 
-        // --- DATA FETCH ---
+        async function loadLastUpdateDate() {
+            try {
+                const { data } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single();
+                if (data && data.value) document.getElementById('lastUpdateDate').innerText = new Date(data.value).toLocaleDateString('it-IT');
+                else document.getElementById('lastUpdateDate').innerText = "N/A";
+            } catch (e) { document.getElementById('lastUpdateDate').innerText = "N/A"; }
+        }
+
+        async function saveLastUpdateDate() {
+            try {
+                const now = new Date().toISOString();
+                await supabase.from('app_settings').upsert({ key: 'last_data_update', value: now });
+                document.getElementById('lastUpdateDate').innerText = new Date().toLocaleDateString('it-IT');
+            } catch (e) { console.error(e); }
+        }
+
         async function fetchAllData() {
             const loader = document.getElementById('tableLoader');
             loader.classList.remove('hidden');
@@ -344,87 +301,81 @@
                 while(keep) {
                     const { data, error } = await supabase.from('lego_sets').select('*').range(from, from + step - 1);
                     if (error) throw error;
-                    if (data.length > 0) { allRows = allRows.concat(data); from += step; if (data.length < step) keep = false; } else keep = false;
+                    if (data.length > 0) {
+                        allRows = allRows.concat(data);
+                        from += step;
+                        if (data.length < step) keep = false;
+                    } else keep = false;
                 }
                 processData(allRows);
             } catch (e) { alert("Errore dati: " + e.message); } 
             finally { loader.classList.add('hidden'); }
         }
 
-        async function loadLastUpdateDate() {
-            const { data } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single();
-            if (data) document.getElementById('lastUpdateDate').innerText = new Date(data.value).toLocaleDateString('it-IT');
-        }
-
-        // --- UPLOAD CSV ---
         document.getElementById('csvInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
-            
+            const label = document.getElementById('uploadLabel');
+            label.innerText = "...";
             Papa.parse(file, {
                 header: true, skipEmptyLines: true, delimiter: "", 
                 complete: async function(results) {
                     try {
+                        if (!results.data || results.data.length === 0) throw new Error("File vuoto");
+                        const sample = results.data[0];
+                        const keys = Object.keys(sample);
+                        const keyMap = {
+                            cod: keys.find(k => k.toLowerCase() === 'cod'),
+                            theme: keys.find(k => k.toLowerCase() === 'theme'),
+                            sub_theme: keys.find(k => k.toLowerCase().includes('sub')),
+                            set_name: keys.find(k => k.toLowerCase() === 'set name' || k.toLowerCase() === 'set_name'),
+                            pieces: keys.find(k => k.toLowerCase() === 'pieces'),
+                            price: keys.find(k => k.toLowerCase() === 'price' || k.toLowerCase() === 'costo' || k.toLowerCase() === 'msrp'),
+                            date: keys.find(k => k.toLowerCase().includes('retirement'))
+                        };
+                        if(!keyMap.cod) throw new Error("Colonna 'Cod' mancante.");
                         const rows = results.data.map(row => {
-                            // Find keys loosely
-                            const keys = Object.keys(row);
-                            const getK = (n) => keys.find(k => k.toLowerCase().includes(n));
-                            
-                            let price = row[getK('price')] || row[getK('costo')] || '0';
-                            if(typeof price === 'string') price = price.replace('€','').replace(',','.').trim();
-
+                            let rawPrice = row[keyMap.price] || '0';
+                            if(typeof rawPrice === 'string') rawPrice = rawPrice.replace('€','').replace(',','.').trim();
                             return {
-                                cod: parseInt(row[getK('cod')]),
-                                theme: row[getK('theme')],
-                                sub_theme: row[getK('sub')] || "",
-                                set_name: row[getK('name')] || row[getK('nome')],
-                                pieces: parseInt(row[getK('pieces')] || 0),
-                                price: parseFloat(price || 0),
-                                retirement_date: row[getK('date')] || row[getK('ritiro')]
+                                cod: parseInt(row[keyMap.cod]),
+                                theme: row[keyMap.theme],
+                                sub_theme: row[keyMap.sub_theme] || "",
+                                set_name: row[keyMap.set_name],
+                                pieces: parseInt(row[keyMap.pieces] || 0),
+                                price: parseFloat(rawPrice || 0),
+                                retirement_date: row[keyMap.date]
                             };
-                        }).filter(r => r.cod);
-
+                        }).filter(r => r.cod && !isNaN(r.cod));
                         const BATCH = 50;
                         for(let i=0; i<rows.length; i+=BATCH) {
+                            label.innerText = `${Math.round((i/rows.length)*100)}%`;
                             await supabase.from('lego_sets').upsert(rows.slice(i, i+BATCH), { onConflict: 'cod' });
                         }
-                        
-                        const now = new Date().toISOString();
-                        await supabase.from('app_settings').upsert({ key: 'last_data_update', value: now });
-                        document.getElementById('lastUpdateDate').innerText = new Date().toLocaleDateString('it-IT');
-                        
-                        alert(`Caricamento completato!`);
+                        await saveLastUpdateDate();
+                        alert(`Completato!`);
                         fetchAllData();
-                    } catch (err) { alert("Errore: " + err.message); }
-                    e.target.value = '';
+                    } catch (err) { alert("Errore: " + err.message); } 
+                    finally { label.innerText = "Carica"; e.target.value = ''; }
                 }
             });
         });
 
-        // --- EXPORT ---
         function exportToCSV() {
             if (filteredData.length === 0) { alert("Nessun dato!"); return; }
-            
-            const dataToExport = filteredData.map(row => {
-                const lib = userLibrary.get(row.cod);
-                return {
-                    Codice: row.cod, Tema: row.theme, Nome: row.set_name, 
-                    Pezzi: row.pieces, Prezzo: row._price, Ritiro: row.retirement_date,
-                    Posseduto: lib && lib.status === 'owned' ? 'SI' : 'NO',
-                    Desiderato: lib && lib.status === 'wanted' ? 'SI' : 'NO',
-                    Quantità: lib ? lib.qty : 0,
-                    Link: `https://www.lego.com/it-it/product/${row.cod}`
-                };
-            });
+            const filename = showOnlyFavorites ? `itavix_preferiti.csv` : `itavix_full.csv`;
+            const dataToExport = filteredData.map(row => ({
+                Codice: row.cod, Tema: row.theme, Nome: row.set_name, Pezzi: row.pieces, Prezzo: row._price, Ritiro: row.retirement_date, Link: `https://www.lego.com/it-it/product/${row.cod}`
+            }));
             const csv = Papa.unparse(dataToExport);
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `itavix_export_${new Date().toISOString().slice(0,10)}.csv`;
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
             link.click();
         }
 
-        // --- LOGIC ---
         function processData(data) {
             allData = data.map(item => ({
                 ...item,
@@ -434,12 +385,11 @@
                 _img: `https://images.brickset.com/sets/images/${item.cod}-1.jpg`
             }));
             
-            // Populate Filters
             const themes = [...new Set(allData.map(d => d.theme).filter(Boolean))].sort();
             const years = [...new Set(allData.map(d => d._date.getFullYear()))].sort().filter(y => !isNaN(y) && y < 2099);
             
-            document.getElementById('themeFilter').innerHTML = '<option value="all">Tutti i Temi</option>' + themes.map(t => `<option value="${t}">${t}</option>`).join('');
-            document.getElementById('yearFilter').innerHTML = '<option value="all">Tutti gli Anni</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+            document.getElementById('themeFilter').innerHTML = '<option value="all">Temi</option>' + themes.map(t => `<option value="${t}">${t}</option>`).join('');
+            document.getElementById('yearFilter').innerHTML = '<option value="all">Anni</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
 
             applyFilters();
         }
@@ -453,112 +403,36 @@
                 const baseMatch = (d._search.includes(s)) && 
                                   (t === 'all' || d.theme === t) && 
                                   (y === 'all' || d._date.getFullYear().toString() === y);
-                
-                if (showOnlyCollection) return baseMatch && userLibrary.has(d.cod);
+                if (showOnlyFavorites) return baseMatch && favoritesSet.has(d.cod);
                 return baseMatch;
             });
             render();
-            updateDashboardStats();
+            updateStats();
         }
 
-        function toggleDashboard() {
-            const panel = document.getElementById('dashboardPanel');
-            panel.classList.toggle('hidden');
-            if(!panel.classList.contains('hidden')) updateCharts();
-        }
+        function updateStats() {
+            // FUNZIONE SICURA: Se un elemento non esiste, lo ignora (Safe Mode)
+            const safeSetText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = val;
+            };
 
-        function toggleViewFavorites() {
-            showOnlyCollection = !showOnlyCollection;
-            const btn = document.getElementById('btnToggleFavs');
-            const txt = document.getElementById('favBtnText');
+            safeSetText('statTotalSets', filteredData.length.toLocaleString());
+            safeSetText('statRetiring', filteredData.filter(d => d._date.getFullYear() === 2025).length.toLocaleString());
+            safeSetText('statTotalPieces', filteredData.reduce((a,b) => a+(b.pieces||0), 0).toLocaleString());
             
-            if (showOnlyCollection) {
-                btn.className = "flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition gap-2 text-xs md:text-sm font-bold";
-                txt.innerText = "Mostra Tutti";
-            } else {
-                btn.className = "flex items-center px-3 py-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-lg hover:bg-yellow-200 transition gap-2 text-xs md:text-sm font-bold";
-                txt.innerText = "La Mia Collezione";
-            }
-            applyFilters();
-        }
-
-        // --- STATS & CHARTS ---
-        function updateDashboardStats() {
-            // Calcolo Stats per la vista corrente
-            document.getElementById('totalSets').innerText = filteredData.length.toLocaleString();
-            document.getElementById('retiring2025').innerText = filteredData.filter(d => d._date.getFullYear() === 2025).length;
-            document.getElementById('totalPieces').innerText = filteredData.reduce((a,b) => a+(b.pieces||0), 0).toLocaleString();
-            
-            // Calcolo valore basato su PREZZO * QUANTITA' (solo se posseduto)
-            let totalVal = 0;
-            let collectionPieces = 0;
-            
-            filteredData.forEach(d => {
-                const lib = userLibrary.get(d.cod);
-                if (lib && lib.status === 'owned') {
-                    totalVal += d._price * lib.qty;
-                    collectionPieces += (d.pieces||0) * lib.qty;
-                }
-            });
-            
-            const valString = totalVal > 0 ? `€ ${totalVal.toLocaleString('it-IT', {minimumFractionDigits: 0})}` : '-';
-            document.getElementById('totalValue').innerText = valString;
-            document.getElementById('dashTotalValue').innerText = valString;
-            document.getElementById('dashTotalPieces').innerText = collectionPieces.toLocaleString();
+            const totalVal = filteredData.reduce((a,b) => a + b._price, 0);
+            safeSetText('statTotalValue', totalVal > 0 ? `€ ${totalVal.toLocaleString('it-IT', {minimumFractionDigits: 2})}` : '-');
 
             if(filteredData.length > 0) {
                 const c = {}; filteredData.forEach(d => c[d.theme] = (c[d.theme]||0)+1);
-                document.getElementById('topTheme').innerText = Object.keys(c).reduce((a,b) => c[a]>c[b]?a:b);
-            } else document.getElementById('topTheme').innerText = "-";
+                const top = Object.keys(c).reduce((a,b) => c[a]>c[b]?a:b);
+                safeSetText('statTopTheme', top);
+            } else safeSetText('statTopTheme', "-");
         }
 
-        function updateCharts() {
-            if (document.getElementById('dashboardPanel').classList.contains('hidden')) return;
-
-            // Filtriamo solo i set POSSEDUTI per i grafici
-            const ownedSets = allData.filter(d => {
-                const lib = userLibrary.get(d.cod);
-                return lib && lib.status === 'owned';
-            });
-
-            if (ownedSets.length === 0) return;
-
-            // 1. Chart Themes
-            const themes = {};
-            ownedSets.forEach(d => themes[d.theme] = (themes[d.theme]||0) + (userLibrary.get(d.cod).qty));
-            const themeLabels = Object.keys(themes);
-            const themeData = Object.values(themes);
-
-            if (charts.theme) charts.theme.destroy();
-            charts.theme = new Chart(document.getElementById('chartThemes'), {
-                type: 'doughnut',
-                data: {
-                    labels: themeLabels,
-                    datasets: [{ data: themeData, backgroundColor: ['#ef4444', '#3b82f6', '#eab308', '#22c55e', '#a855f7', '#64748b'] }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-
-            // 2. Chart Retirement
-            const years = {};
-            ownedSets.forEach(d => {
-                const y = d._date.getFullYear();
-                if(y < 2099) years[y] = (years[y]||0) + 1;
-            });
-            
-            if (charts.retire) charts.retire.destroy();
-            charts.retire = new Chart(document.getElementById('chartRetirement'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(years).sort(),
-                    datasets: [{ label: 'Set in Ritiro', data: Object.keys(years).sort().map(k => years[k]), backgroundColor: '#f97316' }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-        }
-
-        // --- RENDER ---
         function render() {
+            // Stats ora chiamate separatamente da applyFilters()
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             
@@ -572,60 +446,22 @@
             const frag = document.createDocumentFragment();
             filteredData.forEach(row => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-blue-50 dark:hover:bg-gray-700 transition border-b border-gray-100 dark:border-gray-700";
-                
-                // Logic Ritiro
-                const now = new Date();
-                const diffTime = row._date - now;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                let retireClass = "text-gray-600 dark:text-gray-400";
-                let retireLabel = row.retirement_date;
-                
-                if (row._date.getFullYear() === 2025) {
-                    if (diffDays < 180) retireClass = "text-red-600 font-bold bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded"; // Urgente
-                    else retireClass = "text-orange-600 font-bold";
-                }
-
-                // Logic Collezione
-                const lib = userLibrary.get(row.cod);
-                const isOwned = lib && lib.status === 'owned';
-                const isWanted = lib && lib.status === 'wanted';
-                
-                // Pulsanti Azione
-                const btnOwned = `<button onclick="updateSetStatus(${row.cod}, 'owned')" class="p-1.5 rounded-md transition ${isOwned ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'text-gray-300 hover:text-green-500'}"><i data-lucide="package" class="w-4 h-4"></i></button>`;
-                const btnWanted = `<button onclick="updateSetStatus(${row.cod}, 'wanted')" class="p-1.5 rounded-md transition ${isWanted ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-300 hover:text-red-500'}"><i data-lucide="heart" class="w-4 h-4"></i></button>`;
-                
-                let qtyControls = '';
-                if (isOwned) {
-                    qtyControls = `<div class="flex items-center gap-1 text-xs font-mono mt-1 justify-center">
-                        <button onclick="updateQty(${row.cod}, -1)" class="hover:bg-gray-200 px-1 rounded">-</button>
-                        <span class="font-bold text-gray-800 dark:text-white">${lib.qty}</span>
-                        <button onclick="updateQty(${row.cod}, 1)" class="hover:bg-gray-200 px-1 rounded">+</button>
-                    </div>`;
-                }
+                tr.className = "hover:bg-blue-50 transition border-b border-gray-100 last:border-0";
+                const isSoon = row._date.getFullYear() <= new Date().getFullYear();
+                const url = `https://www.lego.com/it-it/product/${row.cod}`;
+                const isFav = favoritesSet.has(row.cod);
+                const heartClass = isFav ? "heart-filled fill-red-500 text-red-500" : "text-gray-300 hover:text-red-300";
 
                 tr.innerHTML = `
-                    <td class="p-3 text-center align-top">
-                        <div class="flex justify-center gap-1">${btnOwned}${btnWanted}</div>
-                        ${qtyControls}
-                    </td>
-                    <td class="p-3 text-center align-top">
-                        <div class="relative group w-12 h-12 mx-auto">
-                            <img src="${row._img}" loading="lazy" class="w-full h-full object-contain set-thumb bg-white rounded p-0.5 border border-gray-200" onerror="this.style.display='none'">
-                        </div>
-                    </td>
-                    <td class="p-3 text-sm font-mono text-blue-600 dark:text-blue-400 align-middle"><a href="https://www.lego.com/it-it/product/${row.cod}" target="_blank">${row.cod}</a></td>
-                    <td class="p-3 text-sm align-middle"><span class="bg-gray-100 dark:bg-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs font-bold whitespace-nowrap">${row.theme}</span></td>
-                    <td class="p-3 text-sm font-medium dark:text-white align-middle">${row.set_name}</td>
-                    <td class="p-3 text-sm text-right text-gray-500 dark:text-gray-400 align-middle">${row.pieces||0}</td>
-                    <td class="p-3 text-sm text-right font-medium text-green-700 dark:text-green-400 whitespace-nowrap align-middle">${row._price > 0 ? '€ '+row._price.toFixed(2) : '-'}</td>
-                    <td class="p-3 text-sm text-right font-medium whitespace-nowrap align-middle"><span class="${retireClass}">${retireLabel}</span></td>
-                    <td class="p-3 text-center align-middle">
-                        <div class="flex justify-center gap-2">
-                            <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?S=${row.cod}-1" target="_blank" title="BrickLink" class="text-gray-400 hover:text-blue-500"><i data-lucide="external-link" class="w-4 h-4"></i></a>
-                            <a href="https://www.amazon.it/s?k=lego+${row.cod}" target="_blank" title="Amazon" class="text-gray-400 hover:text-orange-500"><i data-lucide="shopping-cart" class="w-4 h-4"></i></a>
-                        </div>
-                    </td>
+                    <td class="p-2 md:p-3 text-center"><button id="fav-btn-${row.cod}" onclick="toggleFavorite(${row.cod})" class="heart-btn focus:outline-none"><i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5 ${heartClass}"></i></button></td>
+                    <td class="p-2 md:p-3 text-center relative group"><img src="${row._img}" loading="lazy" class="w-8 h-8 md:w-10 md:h-10 object-contain set-thumb mx-auto" onerror="this.style.display='none'"></td>
+                    <td class="p-2 md:p-3 text-sm font-mono text-blue-600"><a href="${url}" target="_blank">${row.cod}</a></td>
+                    <td class="p-2 md:p-3 text-sm"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-bold whitespace-nowrap">${row.theme}</span></td>
+                    <td class="p-2 md:p-3 text-sm font-medium text-gray-800">${row.set_name}</td>
+                    <td class="p-2 md:p-3 text-sm text-right text-gray-500">${row.pieces||0}</td>
+                    <td class="p-2 md:p-3 text-sm text-right font-medium text-green-700 whitespace-nowrap">${row._price > 0 ? '€ '+row._price.toFixed(2) : '-'}</td>
+                    <td class="p-2 md:p-3 text-sm text-right font-medium whitespace-nowrap ${isSoon ? 'text-red-600' : 'text-gray-600'}">${row.retirement_date}</td>
+                    <td class="p-2 md:p-3 text-center"><a href="${url}" target="_blank" class="text-blue-500"><i data-lucide="external-link" class="w-4 h-4 inline"></i></a></td>
                 `;
                 frag.appendChild(tr);
             });
@@ -637,6 +473,7 @@
             if(currentSort.key === k) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
             else { currentSort.key = k; currentSort.direction = 'asc'; }
             render();
+            updateStats(); // Refresh order doesn't change stats but good practice
         }
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);
