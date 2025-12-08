@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iTavix LEGO Tracker v4.6 (Stable)</title>
+    <title>iTavix LEGO Tracker v4.7 (Mobile Fix)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -14,10 +14,15 @@
         .blur-content { filter: blur(5px); pointer-events: none; user-select: none; }
         .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #2563eb; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        
+        /* Scrollbar personalizzata (Solo Desktop) */
+        @media (min-width: 768px) {
+            .custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+            .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+            .custom-scroll::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+            .custom-scroll::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        }
+        
         .heart-btn { transition: transform 0.2s; }
         .heart-btn:active { transform: scale(1.3); }
         .heart-filled { fill: #ef4444; color: #ef4444; }
@@ -25,7 +30,7 @@
         .set-thumb:hover { transform: scale(3.5); z-index: 50; position: relative; border-radius: 4px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #e5e7eb; }
     </style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col relative bg-gray-100">
+<body class="min-h-screen w-full bg-gray-100 flex flex-col relative md:h-screen md:overflow-hidden">
 
     <div id="loginOverlay" class="fixed inset-0 z-[100] bg-gray-900 flex items-center justify-center transition-opacity duration-500">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4">
@@ -36,17 +41,9 @@
             </div>
             
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="tua@email.com">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••">
-                </div>
-                
-                <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium"></div>
-
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="tua@email.com"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••"></div>
+                <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium bg-red-100 text-red-700"></div>
                 <div class="flex gap-3 pt-2">
                     <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition active:scale-95 shadow-md">Accedi</button>
                     <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition active:scale-95 shadow-sm">Registrati</button>
@@ -55,69 +52,65 @@
         </div>
     </div>
 
-    <div id="appContent" class="h-full flex flex-col p-4 md:p-6 gap-4 blur-content transition-all duration-500 opacity-50">
+    <div id="appContent" class="flex-grow flex flex-col p-2 md:p-6 gap-3 md:gap-4 blur-content transition-all duration-500 opacity-50 md:h-full">
         
-        <div class="flex-none space-y-4">
-            <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex-none space-y-3 md:space-y-4">
+            <div class="bg-white p-3 md:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between items-center gap-3">
                 <div class="flex items-center gap-3 w-full md:w-auto">
-                    <div class="shrink-0">
-                        <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-12 h-12 object-contain hover:scale-110 transition-transform duration-300">
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-800">iTavix LEGO Tracker</h1>
-                        <p class="text-gray-500 text-xs" id="userEmailDisplay">In attesa di login...</p>
-                    </div>
+                    <div class="shrink-0"><img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-10 h-10 md:w-12 md:h-12 object-contain hover:scale-110 transition-transform duration-300"></div>
+                    <div><h1 class="text-xl md:text-2xl font-bold text-gray-800">iTavix LEGO Tracker</h1><p class="text-gray-500 text-xs" id="userEmailDisplay">In attesa...</p></div>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <button id="btnToggleFavs" onclick="toggleViewFavorites()" class="flex items-center justify-center px-4 py-2 bg-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-500 transition gap-2 font-bold w-full sm:w-auto shadow-sm">
-                        <i data-lucide="star" class="w-4 h-4"></i><span id="favBtnText">I Miei Preferiti</span>
+                <div class="grid grid-cols-2 sm:flex sm:flex-row gap-2 w-full md:w-auto">
+                    <button id="btnToggleFavs" onclick="toggleViewFavorites()" class="col-span-2 sm:col-span-1 flex items-center justify-center px-3 py-2 bg-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-500 transition gap-2 font-bold text-sm shadow-sm">
+                        <i data-lucide="star" class="w-4 h-4"></i><span id="favBtnText">Preferiti</span>
                     </button>
-                    <label class="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition gap-2 font-medium w-full sm:w-auto select-none shadow-sm">
-                        <i data-lucide="upload-cloud" class="w-4 h-4"></i><span id="uploadLabel">Carica CSV</span>
+                    <label class="flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition gap-2 font-medium text-sm select-none shadow-sm">
+                        <i data-lucide="upload-cloud" class="w-4 h-4"></i><span id="uploadLabel">Carica</span>
                         <input type="file" id="csvInput" accept=".csv" class="hidden">
                     </label>
-                    <button id="btnDownload" onclick="exportToCSV()" class="hidden flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition gap-2 font-medium w-full sm:w-auto shadow-sm">
-                        <i data-lucide="download" class="w-4 h-4"></i> Scarica
+                    <button id="btnDownload" onclick="exportToCSV()" class="hidden flex items-center justify-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition gap-2 font-medium text-sm shadow-sm">
+                        <i data-lucide="download" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="logout()" class="flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition gap-2 font-medium w-full sm:w-auto shadow-sm">
-                        <i data-lucide="log-out" class="w-4 h-4"></i> Esci
+                    <button onclick="logout()" class="flex items-center justify-center px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition gap-2 font-medium text-sm shadow-sm">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Set Visualizzati</p><p class="text-lg font-bold text-gray-800" id="totalSets">-</p></div>
-                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Ritiro 2025</p><p class="text-lg font-bold text-orange-600" id="retiring2025">-</p></div>
-                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Pezzi Totali</p><p class="text-lg font-bold text-blue-600" id="totalPieces">-</p></div>
-                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Tema Top</p><p class="text-base font-bold text-gray-800 truncate" id="topTheme">-</p></div>
-                <div class="bg-white p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-xs">Valore Stimato</p><p class="text-base font-bold text-green-600 truncate" id="totalValue">-</p></div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
+                <div class="bg-white p-2 md:p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-[10px] md:text-xs">Set</p><p class="text-base md:text-lg font-bold text-gray-800" id="totalSets">-</p></div>
+                <div class="bg-white p-2 md:p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-[10px] md:text-xs">Ritiro '25</p><p class="text-base md:text-lg font-bold text-orange-600" id="retiring2025">-</p></div>
+                <div class="bg-white p-2 md:p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-[10px] md:text-xs">Pezzi</p><p class="text-base md:text-lg font-bold text-blue-600" id="totalPieces">-</p></div>
+                <div class="bg-white p-2 md:p-3 rounded-xl shadow border border-gray-200"><p class="text-gray-500 text-[10px] md:text-xs">Top</p><p class="text-sm md:text-base font-bold text-gray-800 truncate" id="topTheme">-</p></div>
+                <div class="bg-white p-2 md:p-3 rounded-xl shadow border border-gray-200 col-span-2 md:col-span-1"><p class="text-gray-500 text-[10px] md:text-xs">Valore</p><p class="text-base md:text-lg font-bold text-green-600 truncate" id="totalValue">-</p></div>
             </div>
 
-            <div class="bg-white p-3 rounded-xl shadow border border-gray-200 flex flex-col md:flex-row gap-4 items-center">
-                <div class="flex-1 relative w-full"><i data-lucide="search" class="absolute left-3 top-3 text-gray-400 w-5 h-5"></i><input type="text" id="searchInput" placeholder="Cerca..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                <div class="flex gap-3 w-full md:w-auto">
-                    <select id="themeFilter" class="w-full md:w-48 p-2 border border-gray-300 rounded-lg bg-white outline-none"><option value="all">Tutti i Temi</option></select>
-                    <select id="yearFilter" class="w-full md:w-40 p-2 border border-gray-300 rounded-lg bg-white outline-none"><option value="all">Tutti gli Anni</option></select>
+            <div class="bg-white p-3 md:p-3 rounded-xl shadow border border-gray-200 flex flex-col md:flex-row gap-2 md:gap-4 items-center">
+                <div class="flex-1 relative w-full"><i data-lucide="search" class="absolute left-3 top-2.5 text-gray-400 w-4 h-4"></i><input type="text" id="searchInput" placeholder="Cerca..." class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"></div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <select id="themeFilter" class="w-full md:w-48 p-2 border border-gray-300 rounded-lg bg-white outline-none text-sm"><option value="all">Tutti i Temi</option></select>
+                    <select id="yearFilter" class="w-full md:w-40 p-2 border border-gray-300 rounded-lg bg-white outline-none text-sm"><option value="all">Tutti gli Anni</option></select>
                 </div>
             </div>
         </div>
 
-        <div class="flex-1 bg-white rounded-xl shadow border border-gray-200 overflow-hidden relative min-h-0 flex flex-col">
+        <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden relative flex flex-col min-h-[500px] md:flex-1 md:min-h-0">
             <div id="tableLoader" class="absolute inset-0 bg-white z-20 flex flex-col items-center justify-center"><div class="loader mb-2"></div><p class="text-gray-500 text-sm animate-pulse" id="loadingText">Sincronizzazione...</p></div>
-            <div class="flex-1 overflow-auto custom-scroll">
-                <table class="w-full text-left border-collapse min-w-[800px]">
+            
+            <div class="flex-1 overflow-x-auto md:overflow-auto custom-scroll">
+                <table class="w-full text-left border-collapse min-w-[700px]">
                     <thead class="bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                         <tr>
-                            <th class="p-4 text-center w-12 text-xs font-bold text-gray-500 uppercase"><i data-lucide="heart" class="w-4 h-4 mx-auto"></i></th>
-                            <th class="p-4 text-center w-16 text-xs font-bold text-gray-500 uppercase">Img</th>
-                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('cod')">Cod</th>
-                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('theme')">Tema</th>
-                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('set_name')">Nome</th>
-                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('pieces')">Pezzi</th>
-                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('price')">Prezzo</th>
-                            <th class="p-4 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('retirement_date')">Ritiro</th>
-                            <th class="p-4 text-center w-16 text-xs font-bold text-gray-500 uppercase">Link</th>
+                            <th class="p-3 text-center w-10 text-xs font-bold text-gray-500 uppercase"><i data-lucide="heart" class="w-4 h-4 mx-auto"></i></th>
+                            <th class="p-3 text-center w-14 text-xs font-bold text-gray-500 uppercase">Img</th>
+                            <th class="p-3 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('cod')">Cod</th>
+                            <th class="p-3 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('theme')">Tema</th>
+                            <th class="p-3 text-xs font-bold text-gray-500 uppercase cursor-pointer hover:bg-gray-100" onclick="sortTable('set_name')">Nome</th>
+                            <th class="p-3 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('pieces')">Pezzi</th>
+                            <th class="p-3 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('price')">Prezzo</th>
+                            <th class="p-3 text-xs font-bold text-gray-500 uppercase cursor-pointer text-right hover:bg-gray-100" onclick="sortTable('retirement_date')">Ritiro</th>
+                            <th class="p-3 text-center w-12 text-xs font-bold text-gray-500 uppercase">Link</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-gray-100"></tbody>
@@ -125,8 +118,8 @@
             </div>
         </div>
 
-        <footer class="flex-none bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center">
-            <p class="text-xs text-gray-500"><span class="font-bold text-gray-700">iTavix LEGO Tracker v4.6</span> | Ultimo aggiornamento dati: <span id="lastUpdateDate" class="font-medium text-gray-600">Caricamento...</span></p>
+        <footer class="flex-none bg-white p-3 rounded-xl shadow-sm border border-gray-200 text-center mt-auto">
+            <p class="text-[10px] md:text-xs text-gray-500"><span class="font-bold text-gray-700">iTavix LEGO Tracker v4.7</span> | Aggiornato: <span id="lastUpdateDate" class="font-medium text-gray-600">-</span></p>
         </footer>
     </div>
 
@@ -205,12 +198,7 @@
             app.classList.add('opacity-100');
             document.getElementById('userEmailDisplay').innerHTML = `Utente: <b>${email}</b>`;
             
-            // Caricamento parallelo sicuro
-            Promise.all([
-                loadFavorites(),
-                loadLastUpdateDate(),
-                fetchAllData()
-            ]).catch(console.error);
+            Promise.all([loadFavorites(), loadLastUpdateDate(), fetchAllData()]).catch(console.error);
         }
 
         async function logout() { await supabase.auth.signOut(); location.reload(); }
@@ -254,22 +242,19 @@
             } else {
                 btn.classList.add('bg-yellow-400', 'text-yellow-900');
                 btn.classList.remove('bg-red-500', 'text-white', 'hover:bg-red-600');
-                txt.innerText = "I Miei Preferiti";
+                txt.innerText = "Preferiti";
                 dlBtn.classList.add('hidden');
             }
             applyFilters();
         }
 
-        // --- METADATA (ROBUST) ---
+        // --- METADATA ---
         async function loadLastUpdateDate() {
             try {
-                const { data, error } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single();
+                const { data } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single();
                 if (data && data.value) document.getElementById('lastUpdateDate').innerText = new Date(data.value).toLocaleDateString('it-IT');
                 else document.getElementById('lastUpdateDate').innerText = "N/A";
-            } catch (e) {
-                console.warn("Tabella app_settings mancante?", e);
-                document.getElementById('lastUpdateDate').innerText = "N/A (Tabella mancante)";
-            }
+            } catch (e) { console.warn("Meta error", e); document.getElementById('lastUpdateDate').innerText = "N/A"; }
         }
 
         async function saveLastUpdateDate() {
@@ -337,7 +322,6 @@
                         const rows = results.data.map(row => {
                             let rawPrice = row[keyMap.price] || '0';
                             if(typeof rawPrice === 'string') rawPrice = rawPrice.replace('€','').replace(',','.').trim();
-                            
                             return {
                                 cod: parseInt(row[keyMap.cod]),
                                 theme: row[keyMap.theme],
@@ -360,12 +344,11 @@
                         alert(`Caricamento completato! Inseriti ${rows.length} set.`);
                         fetchAllData();
                     } catch (err) { alert("Errore upload: " + err.message); } 
-                    finally { label.innerText = "Carica CSV"; e.target.value = ''; }
+                    finally { label.innerText = "Carica"; e.target.value = ''; }
                 }
             });
         });
 
-        // --- EXPORT ---
         function exportToCSV() {
             if (filteredData.length === 0) { alert("Nessun dato da esportare!"); return; }
             const filename = showOnlyFavorites ? `itavix_preferiti.csv` : `itavix_full.csv`;
@@ -381,7 +364,6 @@
             link.click();
         }
 
-        // --- PROCESS & RENDER ---
         function processData(data) {
             allData = data.map(item => ({
                 ...item,
@@ -449,15 +431,15 @@
                 const heartClass = isFav ? "heart-filled fill-red-500 text-red-500" : "text-gray-400 hover:text-red-300";
 
                 tr.innerHTML = `
-                    <td class="p-3 text-center"><button id="fav-btn-${row.cod}" onclick="toggleFavorite(${row.cod})" class="heart-btn focus:outline-none"><i data-lucide="heart" class="w-5 h-5 ${heartClass}"></i></button></td>
+                    <td class="p-2 text-center"><button id="fav-btn-${row.cod}" onclick="toggleFavorite(${row.cod})" class="heart-btn focus:outline-none"><i data-lucide="heart" class="w-5 h-5 ${heartClass}"></i></button></td>
                     <td class="p-2 text-center relative group"><img src="${row._img}" loading="lazy" class="w-10 h-10 object-contain set-thumb mx-auto" onerror="this.style.display='none'"></td>
-                    <td class="p-3 text-sm font-mono text-blue-600"><a href="${url}" target="_blank">${row.cod}</a></td>
-                    <td class="p-3 text-sm"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-bold">${row.theme}</span></td>
-                    <td class="p-3 text-sm font-medium text-gray-800">${row.set_name}</td>
-                    <td class="p-3 text-sm text-right text-gray-500">${row.pieces||0}</td>
-                    <td class="p-3 text-sm text-right font-medium text-green-700">${row._price > 0 ? '€ '+row._price.toFixed(2) : '-'}</td>
-                    <td class="p-3 text-sm text-right font-medium ${isSoon ? 'text-red-600' : 'text-gray-600'}">${row.retirement_date}</td>
-                    <td class="p-3 text-center"><a href="${url}" target="_blank" class="text-blue-500"><i data-lucide="external-link" class="w-4 h-4 inline"></i></a></td>
+                    <td class="p-2 md:p-3 text-sm font-mono text-blue-600"><a href="${url}" target="_blank">${row.cod}</a></td>
+                    <td class="p-2 md:p-3 text-sm"><span class="bg-gray-100 px-2 py-1 rounded text-xs font-bold whitespace-nowrap">${row.theme}</span></td>
+                    <td class="p-2 md:p-3 text-sm font-medium text-gray-800">${row.set_name}</td>
+                    <td class="p-2 md:p-3 text-sm text-right text-gray-500">${row.pieces||0}</td>
+                    <td class="p-2 md:p-3 text-sm text-right font-medium text-green-700 whitespace-nowrap">${row._price > 0 ? '€ '+row._price.toFixed(2) : '-'}</td>
+                    <td class="p-2 md:p-3 text-sm text-right font-medium whitespace-nowrap ${isSoon ? 'text-red-600' : 'text-gray-600'}">${row.retirement_date}</td>
+                    <td class="p-2 text-center"><a href="${url}" target="_blank" class="text-blue-500"><i data-lucide="external-link" class="w-4 h-4 inline"></i></a></td>
                 `;
                 frag.appendChild(tr);
             });
