@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v6.4</title>
+    <title>iTavix LEGO Manager v6.5 (Restore)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -36,17 +36,16 @@
         <div class="bg-white/95 backdrop-blur p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center relative z-10 border border-white/20">
             <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-20 h-20 object-contain mx-auto mb-4 drop-shadow-md">
             <h2 class="text-3xl font-bold text-gray-800 tracking-tight">iTavix Manager</h2>
-            <p class="text-gray-500 text-sm mt-2 mb-6 font-medium">Accedi al tuo database LEGO</p>
+            <p class="text-gray-500 text-sm mt-2 mb-6">v6.5 (Recovery Mode)</p>
             <div class="space-y-4 text-left">
-                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="tua@email.com"></div>
-                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="••••••••"></div>
+                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="tua@email.com"></div>
+                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="••••••••"></div>
                 <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium"></div>
                 <div class="flex gap-3 pt-2">
-                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform active:scale-95">Accedi</button>
-                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition shadow hover:shadow-md transform active:scale-95">Registrati</button>
+                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg">Accedi</button>
+                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition shadow">Registrati</button>
                 </div>
             </div>
-            <p class="mt-6 text-xs text-gray-400">Powered by iTavix Cloud & Supabase</p>
         </div>
     </div>
 
@@ -55,8 +54,8 @@
             <h3 class="text-lg font-bold mb-4 dark:text-white" id="modalTitle">Aggiorna Prezzo</h3>
             <p class="text-sm text-gray-500 mb-4">Set: <span id="modalSetCode" class="font-mono font-bold"></span></p>
             <div class="space-y-3">
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Prezzo (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Amazon..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Prezzo (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></div>
             </div>
             <div class="flex gap-2 mt-6">
                 <button onclick="closePriceModal()" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Annulla</button>
@@ -73,7 +72,7 @@
             </div>
             <div class="flex-1 overflow-y-auto custom-scroll">
                 <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0"><tr><th class="p-2">Set</th><th class="p-2">Utente</th><th class="p-2">Prezzo</th><th class="p-2">Fonte</th><th class="p-2 text-right">Azioni</th></tr></thead>
+                    <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0"><tr><th class="p-2">Set</th><th class="p-2">Prezzo</th><th class="p-2">Fonte</th><th class="p-2 text-right">Azioni</th></tr></thead>
                     <tbody id="adminTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                 </table>
                 <p id="noSuggestions" class="text-center text-gray-500 mt-10 hidden">Nessun dato.</p>
@@ -89,7 +88,7 @@
                 <div><h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div>
             </div>
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
-                <button id="btnAdmin" onclick="openAdminPanel()" class="hidden p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Admin"><i data-lucide="shield-alert" class="w-4 h-4"></i></button>
+                <button id="btnAdmin" onclick="openAdminPanel()" class="hidden p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"><i data-lucide="shield-alert" class="w-4 h-4"></i></button>
                 <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition"><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i><i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i></button>
                 <button onclick="toggleDashboard()" class="flex items-center px-3 py-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 rounded-lg hover:bg-purple-200 transition gap-2 text-xs md:text-sm font-bold"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> <span class="hidden sm:inline">Dash</span></button>
                 <button id="btnToggleFavs" onclick="toggleViewFavorites()" class="flex items-center px-3 py-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-lg hover:bg-yellow-200 transition gap-2 text-xs md:text-sm font-bold"><i data-lucide="box" class="w-4 h-4"></i> <span id="favBtnText">Collezione</span></button>
@@ -103,19 +102,19 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm"><h3 class="text-xs font-bold uppercase text-gray-500 mb-2">Temi</h3><div class="h-32"><canvas id="chartThemes"></canvas></div></div>
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm"><h3 class="text-xs font-bold uppercase text-gray-500 mb-2">Ritiro</h3><div class="h-32"><canvas id="chartRetirement"></canvas></div></div>
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center"><p class="text-sm text-gray-500">Valore Intero DB</p><p class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="dashDBValue">€ 0</p></div>
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center"><p class="text-sm text-gray-500">Valore Mia Collezione</p><p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1" id="dashCollectionValue">€ 0</p></div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center"><p class="text-sm text-gray-500">Valore DB</p><p class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="dashDBValue">€ 0</p></div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center"><p class="text-sm text-gray-500">Valore Collezione</p><p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1" id="dashCollectionValue">€ 0</p></div>
             </div>
         </div>
 
         <main class="flex-1 overflow-y-auto custom-scroll relative bg-gray-50 dark:bg-gray-900">
-            <div id="tableLoader" class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-20 flex flex-col items-center justify-center hidden"><div class="loader mb-2"></div><p class="text-gray-500 text-xs animate-pulse">Sync...</p></div>
+            <div id="tableLoader" class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-20 flex flex-col items-center justify-center hidden"><div class="loader mb-2"></div><p class="text-gray-500 text-xs animate-pulse">Caricamento...</p></div>
             <div class="p-2 md:p-4 space-y-3 pb-6">
-                <div id="quickStats" class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-xs md:text-sm bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-xs md:text-sm bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                     <div class="border-r border-gray-100 dark:border-gray-700"><span class="text-gray-400 block text-[10px] uppercase">DB Totale</span> <b class="text-gray-800 dark:text-gray-200" id="statDBCount">-</b> / <b class="text-blue-600" id="statDBValue">-</b></div>
-                    <div class="border-r border-gray-100 dark:border-gray-700"><span class="text-gray-400 block text-[10px] uppercase">Mia Collezione</span> <b class="text-gray-800 dark:text-gray-200" id="statCollCount">-</b> / <b class="text-green-600 font-bold" id="statCollValue">-</b></div>
+                    <div class="border-r border-gray-100 dark:border-gray-700"><span class="text-gray-400 block text-[10px] uppercase">Collezione</span> <b class="text-gray-800 dark:text-gray-200" id="statCollCount">-</b> / <b class="text-green-600 font-bold" id="statCollValue">-</b></div>
                     <div class="border-r border-gray-100 dark:border-gray-700"><span class="text-gray-400 block text-[10px] uppercase">Ritiro 2025</span> <b class="text-orange-500" id="statRetiring">-</b></div>
-                    <div><span class="text-gray-400 block text-[10px] uppercase">Pezzi Totali</span> <b class="text-blue-500" id="statPieces">-</b></div>
+                    <div><span class="text-gray-400 block text-[10px] uppercase">Pezzi</span> <b class="text-blue-500" id="statPieces">-</b></div>
                 </div>
                 <div class="flex flex-col md:flex-row gap-2">
                     <div class="relative flex-1"><i data-lucide="search" class="absolute left-3 top-2.5 text-gray-400 w-4 h-4"></i><input type="text" id="searchInput" placeholder="Cerca..." class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:ring-1 focus:ring-purple-500 outline-none bg-white dark:bg-gray-800 dark:text-white"></div>
@@ -143,7 +142,7 @@
         </main>
 
         <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v6.4</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
+            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v6.5</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
         </footer>
     </div>
 
@@ -203,12 +202,15 @@
             document.getElementById('appContent').classList.remove('blur-content', 'opacity-50');
             document.getElementById('appContent').classList.add('opacity-100');
             document.getElementById('userEmailDisplay').innerHTML = `Utente: <b>${email}</b>`;
-            Promise.all([loadLibrary(), loadLastUpdateDate(), fetchAllData()]).then(() => updateCharts());
+            
+            // CARICAMENTO SEPARATO PER SICUREZZA
+            loadLastUpdateDate();
+            loadLibrary().then(() => fetchAllData()); 
         }
         async function logout() { await supabase.auth.signOut(); location.reload(); }
 
         // CORE
-        async function loadLibrary() { try { const { data } = await supabase.from('user_favorites').select('set_cod, status, quantity').eq('user_email', currentUserEmail); if (data) { userLibrary = new Map(); data.forEach(row => userLibrary.set(row.set_cod, { status: row.status || 'wanted', qty: row.quantity || 1 })); } } catch(e) {} }
+        async function loadLibrary() { try { const { data } = await supabase.from('user_favorites').select('set_cod, status, quantity').eq('user_email', currentUserEmail); if (data) { userLibrary = new Map(); data.forEach(row => userLibrary.set(row.set_cod, { status: row.status || 'wanted', qty: row.quantity || 1 })); } } catch(e) { console.error("Lib Error", e); } }
         async function updateSetStatus(cod, status) {
             const current = userLibrary.get(cod);
             if (current && current.status === status) { userLibrary.delete(cod); await supabase.from('user_favorites').delete().match({ user_email: currentUserEmail, set_cod: cod }); }
@@ -222,17 +224,13 @@
             render(); updateDashboardStats();
         }
 
-        // --- NEW PRICE LOGIC ---
+        // --- ADMIN/PRICE LOGIC ---
         function openPriceModal(cod) { 
-            currentEditingCod = cod; 
-            document.getElementById('modalSetCode').innerText = cod; 
-            document.getElementById('suggestPrice').value = ''; 
-            document.getElementById('suggestSource').value = ''; 
-            
+            currentEditingCod = cod; document.getElementById('modalSetCode').innerText = cod; 
+            document.getElementById('suggestPrice').value = ''; document.getElementById('suggestSource').value = ''; 
             const title = document.getElementById('modalTitle');
             if(currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) title.innerText = "Aggiorna Prezzo (Admin)";
             else title.innerText = "Suggerisci Prezzo";
-
             document.getElementById('priceModal').classList.remove('hidden'); 
         }
         function closePriceModal() { document.getElementById('priceModal').classList.add('hidden'); currentEditingCod = null; }
@@ -240,18 +238,12 @@
         async function submitSuggestion() {
             const price = parseFloat(document.getElementById('suggestPrice').value); const source = document.getElementById('suggestSource').value;
             if(!price || !source) { alert("Compila tutti i campi"); return; }
-            
             if (currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                 const { error } = await supabase.from('lego_sets').update({ price: price }).eq('cod', currentEditingCod);
-                if(error) alert("Errore aggiornamento: " + error.message);
-                else {
-                    alert("Prezzo aggiornato immediatamente!");
-                    closePriceModal();
-                    fetchAllData();
-                }
+                if(error) alert("Errore: " + error.message); else { alert("Aggiornato!"); closePriceModal(); fetchAllData(); }
             } else {
                 const { error } = await supabase.from('price_suggestions').insert({ set_cod: currentEditingCod, user_email: currentUserEmail, new_price: price, source: source });
-                if(error) alert("Errore: " + error.message); else { alert("Suggerimento inviato in approvazione!"); closePriceModal(); }
+                if(error) alert("Errore: " + error.message); else { alert("Inviato!"); closePriceModal(); }
             }
         }
 
@@ -276,11 +268,23 @@
         async function rejectSuggestion(id) { await supabase.from('price_suggestions').update({ status: 'rejected' }).eq('id', id); loadSuggestions(); }
 
         function refreshView() { if (showOnlyCollection) applyFilters(); else { render(); updateDashboardStats(); } updateCharts(); }
+        
         async function fetchAllData() {
             const loader = document.getElementById('tableLoader'); loader.classList.remove('hidden');
             let allRows = []; let from = 0; const step = 1000; let keep = true;
-            try { while(keep) { const { data, error } = await supabase.from('lego_sets').select('*').range(from, from + step - 1); if (error) throw error; if (data.length > 0) { allRows = allRows.concat(data); from += step; if (data.length < step) keep = false; } else keep = false; } processData(allRows); } catch (e) { alert("Errore dati"); } finally { loader.classList.add('hidden'); }
+            try { 
+                while(keep) { 
+                    const { data, error } = await supabase.from('lego_sets').select('*').range(from, from + step - 1); 
+                    if (error) throw error; 
+                    if (data && data.length > 0) { allRows = allRows.concat(data); from += step; if (data.length < step) keep = false; } else keep = false; 
+                } 
+                processData(allRows); 
+            } catch (e) { 
+                console.error(e); 
+                alert("Errore caricamento dati. Controlla la console."); 
+            } finally { loader.classList.add('hidden'); }
         }
+        
         async function loadLastUpdateDate() { try { const { data } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single(); if (data) safeUpdate('lastUpdateDate', new Date(data.value).toLocaleDateString('it-IT')); } catch(e) {} }
 
         // CSV
@@ -317,7 +321,7 @@
         function applyFilters() {
             const s = document.getElementById('searchInput').value.toLowerCase(); const t = document.getElementById('themeFilter').value; const y = document.getElementById('yearFilter').value;
             filteredData = allData.filter(d => { const baseMatch = (d._search.includes(s)) && (t === 'all' || d.theme === t) && (y === 'all' || d._date.getFullYear().toString() === y); if (showOnlyCollection) return baseMatch && userLibrary.has(d.cod); return baseMatch; });
-            render(); updateDashboardStats();
+            render(); updateDashboardStats(); updateCharts();
         }
 
         function toggleDashboard() { document.getElementById('dashboardPanel').classList.toggle('hidden'); updateCharts(); }
