@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v6.3</title>
+    <title>iTavix LEGO Manager v7.0</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -11,7 +11,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -26,34 +26,91 @@
         .transition-colors { transition-duration: 200ms; }
         header { flex-shrink: 0; }
 
-        /* Sfondo Login LEGO */
+        /* Sfondo Login/Welcome */
         .lego-bg {
             background-image: url('https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80');
             background-size: cover;
             background-position: center;
         }
+        
+        /* Animazione Welcome */
+        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 
 <body class="h-screen w-screen overflow-hidden flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
 
+    <div id="welcomeOverlay" class="fixed inset-0 z-[200] lego-bg flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm"></div>
+        
+        <div class="relative z-10 w-full max-w-4xl p-6 h-full overflow-y-auto flex flex-col justify-center">
+            
+            <div class="text-center mb-8 fade-in-up">
+                <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-lg">
+                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">Benvenuto in <span class="text-yellow-400">iTavix</span></h1>
+                <p class="text-gray-300 text-lg">Il Gestionale Definitivo per Collezionisti LEGO</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
+                
+                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-100 flex items-start gap-4">
+                    <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 shrink-0"><i data-lucide="search" class="w-8 h-8"></i></div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-1">Database & Ricerca</h3>
+                        <p class="text-sm text-gray-300">Accedi a un database con migliaia di set. Filtra per Anno, Tema o cerca per Codice. Monitora le date di ritiro (EOL).</p>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-200 flex items-start gap-4">
+                    <div class="bg-yellow-500/20 p-3 rounded-xl text-yellow-400 shrink-0"><i data-lucide="box" class="w-8 h-8"></i></div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-1">Gestisci Collezione</h3>
+                        <p class="text-sm text-gray-300">Distingui tra set <b>Posseduti</b> (📦) e <b>Desiderati</b> (❤️). Tieni traccia delle quantità per i tuoi investimenti.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-300 flex items-start gap-4">
+                    <div class="bg-green-500/20 p-3 rounded-xl text-green-400 shrink-0"><i data-lucide="trending-up" class="w-8 h-8"></i></div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-1">Analisi Valore</h3>
+                        <p class="text-sm text-gray-300">Dashboard grafica automatica. Calcola il valore totale della tua collezione e analizza la distribuzione dei temi.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-300 flex items-start gap-4">
+                    <div class="bg-purple-500/20 p-3 rounded-xl text-purple-400 shrink-0"><i data-lucide="users" class="w-8 h-8"></i></div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-1">Community Price</h3>
+                        <p class="text-sm text-gray-300">Contribuisci suggerendo aggiornamenti di prezzo. I dati sono verificati e condivisi con tutti gli utenti.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center fade-in-up delay-300">
+                <button onclick="closeWelcome()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full text-lg shadow-xl hover:shadow-2xl transition transform hover:scale-105 active:scale-95">
+                    Inizia Ora 🚀
+                </button>
+                <p class="mt-4 text-xs text-gray-500">v7.0 • Cliccando accetti di gestire i tuoi mattoncini responsabilmente 😉</p>
+            </div>
+
+        </div>
+    </div>
+
     <div id="loginOverlay" class="fixed inset-0 z-[100] lego-bg flex items-center justify-center transition-opacity duration-500">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-        
         <div class="bg-white/95 backdrop-blur p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center relative z-10 border border-white/20">
             <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-20 h-20 object-contain mx-auto mb-4 drop-shadow-md">
             <h2 class="text-3xl font-bold text-gray-800 tracking-tight">iTavix Manager</h2>
             <p class="text-gray-500 text-sm mt-2 mb-6 font-medium">Accedi al tuo database LEGO</p>
-            
             <div class="space-y-4 text-left">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Email</label>
-                    <input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="tua@email.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Password</label>
-                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="••••••••">
-                </div>
+                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="tua@email.com"></div>
+                <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="••••••••"></div>
                 <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium"></div>
                 <div class="flex gap-3 pt-2">
                     <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform active:scale-95">Accedi</button>
@@ -70,11 +127,11 @@
             <p class="text-sm text-gray-500 mb-4">Set: <span id="modalSetCode" class="font-mono font-bold"></span></p>
             <div class="space-y-3">
                 <div><label class="text-xs font-bold text-gray-500 uppercase">Prezzo (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Amazon, Lego..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Amazon..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
             </div>
             <div class="flex gap-2 mt-6">
                 <button onclick="closePriceModal()" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Annulla</button>
-                <button onclick="submitSuggestion()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold">Salva</button>
+                <button onclick="submitSuggestion()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Invia</button>
             </div>
         </div>
     </div>
@@ -82,7 +139,7 @@
     <div id="adminModal" class="fixed inset-0 z-[70] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-2xl mx-4 h-[80vh] flex flex-col">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold dark:text-white">Moderazione Prezzi</h3>
+                <h3 class="text-lg font-bold dark:text-white">Moderazione</h3>
                 <button onclick="document.getElementById('adminModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500"><i data-lucide="x"></i></button>
             </div>
             <div class="flex-1 overflow-y-auto custom-scroll">
@@ -90,22 +147,17 @@
                     <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0"><tr><th class="p-2">Set</th><th class="p-2">Utente</th><th class="p-2">Prezzo</th><th class="p-2">Fonte</th><th class="p-2 text-right">Azioni</th></tr></thead>
                     <tbody id="adminTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                 </table>
-                <p id="noSuggestions" class="text-center text-gray-500 mt-10 hidden">Nessun suggerimento in attesa.</p>
+                <p id="noSuggestions" class="text-center text-gray-500 mt-10 hidden">Nessun dato.</p>
             </div>
         </div>
     </div>
 
     <div id="appContent" class="flex flex-col h-full blur-content transition-all duration-500 opacity-50">
-        
         <header class="flex-none bg-white dark:bg-gray-800 shadow-sm z-30 relative px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3 w-full md:w-auto">
                 <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-10 h-10 object-contain">
-                <div>
-                    <h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p>
-                </div>
+                <div><h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div>
             </div>
-            
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
                 <button id="btnAdmin" onclick="openAdminPanel()" class="hidden p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Admin"><i data-lucide="shield-alert" class="w-4 h-4"></i></button>
                 <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition"><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i><i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i></button>
@@ -121,14 +173,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm"><h3 class="text-xs font-bold uppercase text-gray-500 mb-2">Temi</h3><div class="h-32"><canvas id="chartThemes"></canvas></div></div>
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm"><h3 class="text-xs font-bold uppercase text-gray-500 mb-2">Ritiro</h3><div class="h-32"><canvas id="chartRetirement"></canvas></div></div>
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center">
-                    <p class="text-sm text-gray-500">Valore Intero DB</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="dashDBValue">€ 0</p>
-                </div>
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center">
-                    <p class="text-sm text-gray-500">Valore Mia Collezione</p>
-                    <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1" id="dashCollectionValue">€ 0</p>
-                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center"><p class="text-sm text-gray-500">Valore Intero DB</p><p class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="dashDBValue">€ 0</p></div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center"><p class="text-sm text-gray-500">Valore Mia Collezione</p><p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-1" id="dashCollectionValue">€ 0</p></div>
             </div>
         </div>
 
@@ -141,13 +187,11 @@
                     <div class="border-r border-gray-100 dark:border-gray-700"><span class="text-gray-400 block text-[10px] uppercase">Ritiro 2025</span> <b class="text-orange-500" id="statRetiring">-</b></div>
                     <div><span class="text-gray-400 block text-[10px] uppercase">Pezzi Totali</span> <b class="text-blue-500" id="statPieces">-</b></div>
                 </div>
-
                 <div class="flex flex-col md:flex-row gap-2">
                     <div class="relative flex-1"><i data-lucide="search" class="absolute left-3 top-2.5 text-gray-400 w-4 h-4"></i><input type="text" id="searchInput" placeholder="Cerca..." class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:ring-1 focus:ring-purple-500 outline-none bg-white dark:bg-gray-800 dark:text-white"></div>
                     <select id="themeFilter" class="p-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 dark:text-white outline-none w-full md:w-auto"><option value="all">Tutti i Temi</option></select>
                     <select id="yearFilter" class="p-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 dark:text-white outline-none w-full md:w-auto"><option value="all">Tutti gli Anni</option></select>
                 </div>
-
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto min-h-[400px]">
                     <table class="w-full text-left border-collapse min-w-[900px]">
                         <thead class="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 sticky top-0 z-10 text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
@@ -169,7 +213,7 @@
         </main>
 
         <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v6.3</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
+            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v7.0</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
         </footer>
     </div>
 
@@ -191,11 +235,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             initDarkMode();
+            
+            // Check Welcome Status
+            if(!localStorage.getItem('itavix_welcome_seen')) {
+                document.getElementById('welcomeOverlay').classList.remove('hidden');
+            }
+
             try {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 checkSession();
             } catch (e) { alert("Config Error"); }
         });
+
+        function closeWelcome() {
+            document.getElementById('welcomeOverlay').classList.add('hidden');
+            localStorage.setItem('itavix_welcome_seen', 'true');
+        }
 
         function safeUpdate(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
         function initDarkMode() { if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
@@ -248,14 +303,13 @@
             render(); updateDashboardStats();
         }
 
-        // --- NEW PRICE LOGIC (ADMIN DIRECT UPDATE) ---
+        // --- NEW PRICE LOGIC ---
         function openPriceModal(cod) { 
             currentEditingCod = cod; 
             document.getElementById('modalSetCode').innerText = cod; 
             document.getElementById('suggestPrice').value = ''; 
             document.getElementById('suggestSource').value = ''; 
             
-            // Check if admin, change title
             const title = document.getElementById('modalTitle');
             if(currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) title.innerText = "Aggiorna Prezzo (Admin)";
             else title.innerText = "Suggerisci Prezzo";
@@ -268,18 +322,15 @@
             const price = parseFloat(document.getElementById('suggestPrice').value); const source = document.getElementById('suggestSource').value;
             if(!price || !source) { alert("Compila tutti i campi"); return; }
             
-            // ADMIN CHECK
             if (currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                // Direct Update
                 const { error } = await supabase.from('lego_sets').update({ price: price }).eq('cod', currentEditingCod);
                 if(error) alert("Errore aggiornamento: " + error.message);
                 else {
                     alert("Prezzo aggiornato immediatamente!");
                     closePriceModal();
-                    fetchAllData(); // Refresh UI
+                    fetchAllData();
                 }
             } else {
-                // Standard Suggestion
                 const { error } = await supabase.from('price_suggestions').insert({ set_cod: currentEditingCod, user_email: currentUserEmail, new_price: price, source: source });
                 if(error) alert("Errore: " + error.message); else { alert("Suggerimento inviato in approvazione!"); closePriceModal(); }
             }
@@ -301,8 +352,7 @@
         async function approveSuggestion(id, cod, price) {
             await supabase.from('lego_sets').update({ price: price }).eq('cod', cod);
             await supabase.from('price_suggestions').update({ status: 'approved' }).eq('id', id);
-            await loadSuggestions(); 
-            await fetchAllData();
+            await loadSuggestions(); await fetchAllData();
         }
         async function rejectSuggestion(id) { await supabase.from('price_suggestions').update({ status: 'rejected' }).eq('id', id); loadSuggestions(); }
 
