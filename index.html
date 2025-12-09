@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v9.1 (Debug)</title>
+    <title>iTavix LEGO Manager v9.2</title>
     
+    <link rel="icon" type="image/png" href="logo.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -72,9 +74,9 @@
             <h3 class="text-lg font-bold mb-4 dark:text-white" id="modalTitle">Aggiorna Prezzo</h3>
             <p class="text-sm text-gray-500 mb-4">Set: <span id="modalSetCode" class="font-mono font-bold"></span></p>
             <div class="space-y-3">
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Prezzo Listino (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Prezzo Mercato (€)</label><input type="number" step="0.01" id="suggestMarketPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Amazon..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Prezzo Listino (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Prezzo Mercato (€)</label><input type="number" step="0.01" id="suggestMarketPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Amazon..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></div>
             </div>
             <div class="flex gap-2 mt-6">
                 <button onclick="closePriceModal()" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Annulla</button>
@@ -118,7 +120,6 @@
     </div>
 
     <div id="appContent" class="flex flex-col h-full blur-content transition-all duration-500 opacity-50">
-        
         <header class="flex-none bg-white dark:bg-gray-800 shadow-sm z-30 relative px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3 w-full md:w-auto">
                 <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-10 h-10 object-contain">
@@ -181,7 +182,7 @@
         </main>
 
         <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v9.1</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
+            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v9.2</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
         </footer>
     </div>
 
@@ -200,6 +201,50 @@
         let charts = {};
         let currentEditingCod = null;
 
+        // --- CORE FUNCTIONS (Moved UP for safety) ---
+        function safeUpdate(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
+        
+        function updateDashboardStats() {
+            let dbValue = 0; let collectionValue = 0; let collectionCount = 0;
+            
+            allData.forEach(d => dbValue += d._market);
+            
+            allData.forEach(d => { 
+                const lib = userLibrary.get(d.cod); 
+                if (lib && lib.status === 'owned') { 
+                    collectionValue += d._market * lib.qty; 
+                    collectionCount++; 
+                } 
+            });
+
+            safeUpdate('statDBCount', allData.length.toLocaleString());
+            safeUpdate('statDBValue', `€ ${dbValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
+            safeUpdate('statCollCount', collectionCount.toLocaleString());
+            safeUpdate('statCollValue', `€ ${collectionValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
+            safeUpdate('statRetiring', filteredData.filter(d => d._date.getFullYear() === 2025).length);
+            safeUpdate('statPieces', filteredData.reduce((a,b) => a+(b.pieces||0), 0).toLocaleString());
+            safeUpdate('dashDBValue', `€ ${dbValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
+            safeUpdate('dashCollectionValue', `€ ${collectionValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
+        }
+
+        function updateCharts() {
+            if (document.getElementById('dashboardPanel').classList.contains('hidden')) return;
+            // Safety check for Chart.js
+            if (typeof Chart === 'undefined') return;
+
+            const ownedSets = allData.filter(d => { const lib = userLibrary.get(d.cod); return lib && lib.status === 'owned'; });
+            if (ownedSets.length === 0) return;
+            const themes = {}; ownedSets.forEach(d => themes[d.theme] = (themes[d.theme]||0) + (userLibrary.get(d.cod).qty));
+            
+            if (charts.theme) charts.theme.destroy(); 
+            charts.theme = new Chart(document.getElementById('chartThemes'), { type: 'doughnut', data: { labels: Object.keys(themes), datasets: [{ data: Object.values(themes), backgroundColor: ['#ef4444', '#3b82f6', '#eab308', '#22c55e', '#a855f7', '#64748b'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+            
+            const years = {}; ownedSets.forEach(d => { const y = d._date.getFullYear(); if(y < 2099) years[y] = (years[y]||0) + 1; });
+            if (charts.retire) charts.retire.destroy(); 
+            charts.retire = new Chart(document.getElementById('chartRetirement'), { type: 'bar', data: { labels: Object.keys(years).sort(), datasets: [{ label: 'Set in Ritiro', data: Object.keys(years).sort().map(k => years[k]), backgroundColor: '#f97316' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        }
+
+        // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             initDarkMode();
@@ -211,7 +256,6 @@
         });
 
         function closeWelcome() { document.getElementById('welcomeOverlay').classList.add('hidden'); localStorage.setItem('itavix_welcome_seen', 'true'); }
-        function safeUpdate(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
         function initDarkMode() { if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); updateCharts(); }
 
@@ -253,7 +297,7 @@
         async function logout() { await supabase.auth.signOut(); location.reload(); }
 
         // CORE
-        async function loadLibrary() { try { const { data } = await supabase.from('user_favorites').select('set_cod, status, quantity').eq('user_email', currentUserEmail); if (data) { userLibrary = new Map(); data.forEach(row => userLibrary.set(row.set_cod, { status: row.status || 'wanted', qty: row.quantity || 1 })); } } catch(e) { console.error("Lib Load", e); } }
+        async function loadLibrary() { try { const { data } = await supabase.from('user_favorites').select('set_cod, status, quantity').eq('user_email', currentUserEmail); if (data) { userLibrary = new Map(); data.forEach(row => userLibrary.set(row.set_cod, { status: row.status || 'wanted', qty: row.quantity || 1 })); } } catch(e) { console.error("Lib Error", e); } }
         async function updateSetStatus(cod, status) {
             const current = userLibrary.get(cod);
             if (current && current.status === status) { userLibrary.delete(cod); await supabase.from('user_favorites').delete().match({ user_email: currentUserEmail, set_cod: cod }); }
@@ -351,16 +395,13 @@
             try { 
                 while(keep) { 
                     const { data, error } = await supabase.from('lego_sets').select('*').range(from, from + step - 1); 
-                    if (error) { 
-                        console.error("Supabase Error:", error); 
-                        throw error; 
-                    }
+                    if (error) throw error; 
                     if (data && data.length > 0) { allRows = allRows.concat(data); from += step; if (data.length < step) keep = false; } else keep = false; 
                 } 
                 processData(allRows); 
             } catch (e) { 
-                console.error("Errore fetchAllData:", e); 
-                alert("ERRORE DETTAGLIATO:\n" + e.message); 
+                console.error(e); 
+                alert("Errore caricamento dati. Controlla la console."); 
             } finally { loader.classList.add('hidden'); }
         }
         
