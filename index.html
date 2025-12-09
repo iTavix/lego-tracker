@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v10.7</title>
+    <title>iTavix LEGO Manager v10.8</title>
     
     <link rel="icon" type="image/png" href="logo.png">
 
@@ -28,6 +28,8 @@
         .transition-colors { transition-duration: 200ms; }
         header { flex-shrink: 0; }
         .lego-bg { background-image: url('https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80'); background-size: cover; background-position: center; }
+        
+        /* Animazioni Welcome */
         .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
         .delay-100 { animation-delay: 0.1s; } .delay-200 { animation-delay: 0.2s; } .delay-300 { animation-delay: 0.3s; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
@@ -39,29 +41,32 @@
     <div id="welcomeOverlay" class="fixed inset-0 z-[200] lego-bg flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm"></div>
         <div class="relative z-10 w-full max-w-4xl p-6 h-full overflow-y-auto flex flex-col justify-center">
+            
             <div class="text-center mb-8 fade-in-up">
                 <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-lg">
                 <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">Benvenuto in <span class="text-yellow-400">iTavix</span></h1>
                 <p class="text-gray-300 text-lg">Il Gestionale Definitivo per Collezionisti LEGO</p>
             </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
                 <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-100 flex items-start gap-4">
                     <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 shrink-0"><i data-lucide="search" class="w-8 h-8"></i></div>
-                    <div><h3 class="text-xl font-bold text-white mb-1">Database & Ricerca</h3><p class="text-sm text-gray-300">Accedi a un database completo. Filtra per Anno, Tema, Codice e monitora le date di ritiro (EOL).</p></div>
+                    <div><h3 class="text-xl font-bold text-white mb-1">Database & Ricerca</h3><p class="text-sm text-gray-300">Database completo. Filtra per Anno, Tema, Codice e monitora le date di ritiro (EOL).</p></div>
                 </div>
                 <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-200 flex items-start gap-4">
                     <div class="bg-yellow-500/20 p-3 rounded-xl text-yellow-400 shrink-0"><i data-lucide="box" class="w-8 h-8"></i></div>
-                    <div><h3 class="text-xl font-bold text-white mb-1">Gestisci Collezione</h3><p class="text-sm text-gray-300">Distingui tra set <b>Posseduti</b> (📦) e <b>Desiderati</b> (❤️). Tieni traccia delle quantità.</p></div>
+                    <div><h3 class="text-xl font-bold text-white mb-1">Gestisci Collezione</h3><p class="text-sm text-gray-300">Distingui tra set <b>Posseduti</b> (📦) e <b>Desiderati</b> (❤️). Gestisci le quantità.</p></div>
                 </div>
                 <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-300 flex items-start gap-4">
                     <div class="bg-green-500/20 p-3 rounded-xl text-green-400 shrink-0"><i data-lucide="trending-up" class="w-8 h-8"></i></div>
-                    <div><h3 class="text-xl font-bold text-white mb-1">Analisi Valore</h3><p class="text-sm text-gray-300">Confronta Prezzo di Listino vs Mercato. Dashboard grafica con distribuzione temi e valore totale.</p></div>
+                    <div><h3 class="text-xl font-bold text-white mb-1">Analisi Valore</h3><p class="text-sm text-gray-300">Confronta Prezzo Listino vs Mercato. Grafici automatici del valore collezione.</p></div>
                 </div>
                 <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-300 flex items-start gap-4">
                     <div class="bg-purple-500/20 p-3 rounded-xl text-purple-400 shrink-0"><i data-lucide="gem" class="w-8 h-8"></i></div>
-                    <div><h3 class="text-xl font-bold text-white mb-1">Esclusive & D2C</h3><p class="text-sm text-gray-300">Identifica facilmente i set Esclusivi LEGO o Limited Edition grazie all'icona gemma 💎.</p></div>
+                    <div><h3 class="text-xl font-bold text-white mb-1">Esclusive & D2C</h3><p class="text-sm text-gray-300">Identifica i set Esclusivi LEGO o Limited Edition grazie all'icona gemma 💎.</p></div>
                 </div>
             </div>
+
             <div class="text-center fade-in-up delay-300">
                 <button onclick="closeWelcome()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full text-lg shadow-xl hover:shadow-2xl transition transform hover:scale-105 active:scale-95">Inizia Ora 🚀</button>
             </div>
@@ -79,8 +84,8 @@
                 <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="••••••••"></div>
                 <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium"></div>
                 <div class="flex gap-3 pt-2">
-                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform active:scale-95">Accedi</button>
-                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition shadow hover:shadow-md transform active:scale-95">Registrati</button>
+                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg">Accedi</button>
+                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition shadow">Registrati</button>
                 </div>
             </div>
             <p class="mt-6 text-xs text-gray-400">Powered by iTavix Cloud & Supabase</p>
@@ -103,7 +108,7 @@
                     <div><label class="text-xs font-bold text-gray-500 uppercase">Listino (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
                     <div><label class="text-xs font-bold text-gray-500 uppercase">Mercato (€)</label><input type="number" step="0.01" id="suggestMarketPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
                 </div>
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Brickset, Amazon..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Brickset..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
             </div>
             <div class="flex gap-2 mt-6">
                 <button onclick="closePriceModal()" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium">Annulla</button>
@@ -139,13 +144,20 @@
     </div>
 
     <div id="appContent" class="flex flex-col h-full blur-content transition-all duration-500 opacity-50">
+        
         <header class="flex-none bg-white dark:bg-gray-800 shadow-sm z-30 relative px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
-            <div class="flex items-center gap-3 w-full md:w-auto"><img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-10 h-10 object-contain"><div><h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div></div>
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-10 h-10 object-contain">
+                <div><h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div>
+            </div>
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
                 <button id="btnAddSet" onclick="openAddSetModal()" class="hidden p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition" title="Nuovo Set"><i data-lucide="plus" class="w-4 h-4"></i></button>
                 <button id="btnAdmin" onclick="openAdminPanel()" class="hidden p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Moderazione"><img src="logo.png" class="w-4 h-4 object-contain"></button>
                 <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition"><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i><i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i></button>
                 <button onclick="toggleDashboard()" class="flex items-center px-3 py-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 rounded-lg hover:bg-purple-200 transition gap-2 text-xs md:text-sm font-bold"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> <span class="hidden sm:inline">Dash</span></button>
+                
+                <button onclick="openWelcome()" class="p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 hover:text-blue-500 rounded-lg transition" title="Info"><i data-lucide="help-circle" class="w-4 h-4"></i></button>
+
                 <button id="btnToggleExcl" onclick="toggleExclusives()" class="flex items-center px-3 py-2 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 rounded-lg hover:bg-indigo-200 transition gap-2 text-xs md:text-sm font-bold"><i data-lucide="gem" class="w-4 h-4"></i> <span id="exclBtnText">Esclusive</span></button>
                 <button id="btnToggleFavs" onclick="toggleViewFavorites()" class="flex items-center px-3 py-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-lg hover:bg-yellow-200 transition gap-2 text-xs md:text-sm font-bold"><i data-lucide="box" class="w-4 h-4"></i> <span id="favBtnText">Collezione</span></button>
                 <label class="p-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition"><i data-lucide="upload-cloud" class="w-4 h-4"></i><input type="file" id="csvInput" accept=".csv" class="hidden"></label>
@@ -199,7 +211,7 @@
         </main>
 
         <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v10.7</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
+            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v10.8</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
         </footer>
     </div>
 
@@ -219,14 +231,14 @@
         let charts = {};
         let currentEditingCod = null;
 
-        // --- 1. CORE FUNCTIONS (DEFINED FIRST) ---
+        // --- CORE FUNCTIONS ---
         function safeUpdate(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
         
-        function formatDateItalian(dateString) { 
-            if (!dateString) return "-"; 
-            const date = new Date(dateString); 
-            if (isNaN(date.getTime())) return dateString; 
-            return date.toLocaleDateString('it-IT'); 
+        function formatDateItalian(dateString) {
+            if (!dateString) return "-";
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            return date.toLocaleDateString('it-IT');
         }
 
         function updateCharts() {
@@ -235,8 +247,8 @@
 
             const ownedSets = allData.filter(d => { const lib = userLibrary.get(d.cod); return lib && lib.status === 'owned'; });
             if (ownedSets.length === 0) return;
-            
             const themes = {}; ownedSets.forEach(d => themes[d.theme] = (themes[d.theme]||0) + (userLibrary.get(d.cod).qty));
+            
             if (charts.theme) charts.theme.destroy(); 
             charts.theme = new Chart(document.getElementById('chartThemes'), { type: 'doughnut', data: { labels: Object.keys(themes), datasets: [{ data: Object.values(themes), backgroundColor: ['#ef4444', '#3b82f6', '#eab308', '#22c55e', '#a855f7', '#64748b'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
             
@@ -247,8 +259,15 @@
 
         function updateDashboardStats() {
             let dbValue = 0; let collectionValue = 0; let collectionCount = 0;
+            
             allData.forEach(d => dbValue += (d._market || 0));
-            allData.forEach(d => { const lib = userLibrary.get(d.cod); if (lib && lib.status === 'owned') { collectionValue += (d._market || 0) * lib.qty; collectionCount++; } });
+            allData.forEach(d => { 
+                const lib = userLibrary.get(d.cod); 
+                if (lib && lib.status === 'owned') { 
+                    collectionValue += (d._market || 0) * lib.qty; 
+                    collectionCount++; 
+                } 
+            });
 
             safeUpdate('statDBCount', allData.length.toLocaleString());
             safeUpdate('statDBValue', `€ ${dbValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
@@ -260,78 +279,36 @@
             safeUpdate('dashCollectionValue', `€ ${collectionValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
         }
 
-        function render() {
-            const tbody = document.getElementById('tableBody'); tbody.innerHTML = '';
-            filteredData.sort((a,b) => { let vA = a[currentSort.key], vB = b[currentSort.key]; if(currentSort.key === 'retirement_date') { vA=a._date; vB=b._date; } if(currentSort.key === 'price') { vA=a._price; vB=b._price; } return (vA < vB ? -1 : 1) * (currentSort.direction === 'asc' ? 1 : -1); });
-            const frag = document.createDocumentFragment();
-            filteredData.forEach(row => {
-                const tr = document.createElement('tr'); tr.className = "hover:bg-purple-50 dark:hover:bg-gray-700 transition border-b border-gray-100 dark:border-gray-700";
-                const now = new Date(); const diffDays = Math.ceil((row._date - now) / (1000 * 60 * 60 * 24)); 
-                let retireClass = "text-gray-600 dark:text-gray-400"; if (row._date.getFullYear() === 2025) retireClass = diffDays < 180 ? "text-red-600 font-bold bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded" : "text-orange-600 font-bold";
-                const lib = userLibrary.get(row.cod); const isOwned = lib && lib.status === 'owned'; const isWanted = lib && lib.status === 'wanted';
-                const btnOwned = `<button onclick="updateSetStatus(${row.cod}, 'owned')" class="p-1.5 rounded-md transition ${isOwned ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'text-gray-300 hover:text-green-500'}"><i data-lucide="package" class="w-4 h-4"></i></button>`;
-                const btnWanted = `<button onclick="updateSetStatus(${row.cod}, 'wanted')" class="p-1.5 rounded-md transition ${isWanted ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-300 hover:text-red-500'}"><i data-lucide="heart" class="w-4 h-4"></i></button>`;
-                let qtyControls = isOwned ? `<div class="flex items-center gap-1 text-xs font-mono mt-1 justify-center"><button onclick="updateQty(${row.cod}, -1)" class="hover:bg-gray-200 px-1 rounded">-</button><span class="font-bold text-gray-800 dark:text-white">${lib.qty}</span><button onclick="updateQty(${row.cod}, 1)" class="hover:bg-gray-200 px-1 rounded">+</button></div>` : '';
-                
-                let marketClass = "text-gray-500";
-                if(row._market) {
-                    if(row._market > row._price) marketClass = "text-red-500 font-bold";
-                    else if(row._market < row._price) marketClass = "text-green-600 font-bold";
-                }
-
-                const dateDisplay = formatDateItalian(row.retirement_date);
-                const exclIcon = row.is_exclusive ? '<i data-lucide="gem" class="w-3.5 h-3.5 text-purple-500 inline ml-1" title="Esclusiva"></i>' : '';
-
-                tr.innerHTML = `
-                    <td class="p-3 text-center align-top"><div class="flex justify-center gap-1">${btnOwned}${btnWanted}</div>${qtyControls}</td>
-                    <td class="p-3 text-center align-top"><div class="relative group w-12 h-12 mx-auto"><img src="${row._img}" loading="lazy" class="w-full h-full object-contain set-thumb bg-white rounded p-0.5 border border-gray-200" onerror="this.style.display='none'"></div></td>
-                    <td class="p-3 text-sm font-mono text-blue-600 dark:text-blue-400 align-middle"><a href="https://www.lego.com/it-it/product/${row.cod}" target="_blank">${row.cod}</a></td>
-                    <td class="p-3 text-sm align-middle"><span class="bg-gray-100 dark:bg-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs font-bold whitespace-nowrap">${row.theme}</span></td>
-                    <td class="p-3 text-sm font-medium dark:text-white align-middle">${row.set_name} ${exclIcon}</td>
-                    <td class="p-3 text-sm text-right text-gray-500 dark:text-gray-400 align-middle">${row.pieces||0}</td>
-                    <td class="p-3 text-sm text-right font-medium text-gray-800 dark:text-gray-200 whitespace-nowrap align-middle">
-                        ${row._price > 0 ? '€ '+row._price.toFixed(2) : '-'}
-                        <button onclick="openPriceModal(${row.cod})" class="ml-1 text-gray-400 hover:text-blue-500 text-xs"><i data-lucide="edit-2" class="w-3 h-3 inline"></i></button>
-                    </td>
-                    <td class="p-3 text-sm text-right font-medium whitespace-nowrap align-middle ${marketClass}">
-                        ${row._market > 0 ? '€ '+row._market.toFixed(2) : '-'}
-                    </td>
-                    <td class="p-3 text-sm text-right font-medium whitespace-nowrap align-middle"><span class="${retireClass}">${dateDisplay}</span></td>
-                    <td class="p-3 text-center align-middle"><div class="flex justify-center gap-2"><a href="https://www.bricklink.com/v2/catalog/catalogitem.page?S=${row.cod}-1" target="_blank" title="BrickLink" class="text-gray-400 hover:text-blue-500"><i data-lucide="external-link" class="w-4 h-4"></i></a><a href="https://www.amazon.it/s?k=lego+${row.cod}" target="_blank" title="Amazon" class="text-gray-400 hover:text-orange-500"><i data-lucide="shopping-cart" class="w-4 h-4"></i></a></div></td>
-                `;
-                frag.appendChild(tr);
-            });
-            tbody.appendChild(frag);
-            lucide.createIcons();
-        }
-
-        function sortTable(k) { if(currentSort.key === k) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc'; else { currentSort.key = k; currentSort.direction = 'asc'; } render(); }
-
-        // --- 2. INIT & LISTENERS ---
+        // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             initDarkMode();
-            if(!localStorage.getItem('itavix_welcome_seen')) document.getElementById('welcomeOverlay').classList.remove('hidden');
+            
+            // Check Welcome Status (Key changed to force refresh)
+            if(!localStorage.getItem('itavix_welcome_v10_8')) {
+                document.getElementById('welcomeOverlay').classList.remove('hidden');
+            }
+
             try {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 checkSession();
             } catch (e) { alert("Config Error"); }
         });
 
-        // Event Listeners
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('themeFilter').addEventListener('change', applyFilters);
-        document.getElementById('yearFilter').addEventListener('change', applyFilters);
-        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key==='Enter') handleAuth('login'); });
-        document.getElementById('btnLogin').addEventListener('click', () => handleAuth('login'));
-        document.getElementById('btnSignup').addEventListener('click', () => handleAuth('signup'));
+        function openWelcome() { document.getElementById('welcomeOverlay').classList.remove('hidden'); }
+        function closeWelcome() { 
+            document.getElementById('welcomeOverlay').classList.add('hidden'); 
+            localStorage.setItem('itavix_welcome_v10_8', 'true'); 
+        }
 
-        // --- 3. LOGIC FUNCTIONS ---
-        function closeWelcome() { document.getElementById('welcomeOverlay').classList.add('hidden'); localStorage.setItem('itavix_welcome_seen', 'true'); }
         function initDarkMode() { if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); updateCharts(); }
 
+        // AUTH
         async function checkSession() { try { const { data } = await supabase.auth.getSession(); if (data.session) unlockApp(data.session.user.email); } catch (e) {} }
+        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key==='Enter') handleAuth('login'); });
+        document.getElementById('btnLogin').addEventListener('click', () => handleAuth('login'));
+        document.getElementById('btnSignup').addEventListener('click', () => handleAuth('signup'));
 
         async function handleAuth(type) {
             const email = document.getElementById('email').value.trim();
@@ -359,12 +336,12 @@
             document.getElementById('appContent').classList.add('opacity-100');
             document.getElementById('userEmailDisplay').innerHTML = `Utente: <b>${email}</b>`;
             
-            // SEPARATE LOADS
             loadLastUpdateDate();
             loadLibrary().then(() => fetchAllData());
         }
         async function logout() { await supabase.auth.signOut(); location.reload(); }
 
+        // CORE
         async function loadLibrary() { try { const { data } = await supabase.from('user_favorites').select('set_cod, status, quantity').eq('user_email', currentUserEmail); if (data) { userLibrary = new Map(); data.forEach(row => userLibrary.set(row.set_cod, { status: row.status || 'wanted', qty: row.quantity || 1 })); } } catch(e) { console.error("Lib Load", e); } }
         async function updateSetStatus(cod, status) {
             const current = userLibrary.get(cod);
@@ -379,6 +356,7 @@
             render(); updateDashboardStats();
         }
 
+        // --- NEW: ADD SET LOGIC ---
         function openAddSetModal() { document.getElementById('addSetModal').classList.remove('hidden'); }
         async function addNewSet() {
             const cod = parseInt(document.getElementById('newSetCod').value);
@@ -395,6 +373,7 @@
             else { alert("Set aggiunto!"); document.getElementById('addSetModal').classList.add('hidden'); fetchAllData(); }
         }
 
+        // --- PRICE LOGIC ---
         function openPriceModal(cod) { 
             currentEditingCod = cod; document.getElementById('modalSetCode').innerText = cod; 
             document.getElementById('bricksetLink').href = `https://brickset.com/sets/${cod}-1`;
@@ -486,16 +465,37 @@
             try { 
                 while(keep) { 
                     const { data, error } = await supabase.from('lego_sets').select('*').range(from, from + step - 1); 
-                    if (error) { throw error; }
+                    if (error) { 
+                        console.error("Supabase Error:", error); 
+                        throw new Error(error.message + " (Code: " + error.code + ")");
+                    }
                     if (data && data.length > 0) { allRows = allRows.concat(data); from += step; if (data.length < step) keep = false; } else keep = false; 
                 } 
                 processData(allRows); 
             } catch (e) { 
-                console.error(e); 
+                console.error("Errore fetchAllData:", e); 
+                alert("ERRORE CARICAMENTO DATI:\n" + e.message + "\n\nSuggerimento: Esegui lo script SQL di ripristino su Supabase."); 
             } finally { loader.classList.add('hidden'); }
         }
         
         async function loadLastUpdateDate() { try { const { data } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single(); if (data) safeUpdate('lastUpdateDate', new Date(data.value).toLocaleDateString('it-IT')); } catch(e) {} }
+
+        // CSV (No changes)
+        document.getElementById('csvInput').addEventListener('change', function(e) {
+            const file = e.target.files[0]; if (!file) return;
+            Papa.parse(file, { header: true, skipEmptyLines: true, delimiter: "", complete: async function(results) {
+                try {
+                    const rows = results.data.map(row => {
+                        const keys = Object.keys(row); const getK = (n) => keys.find(k => k.toLowerCase().includes(n));
+                        let price = row[getK('price')] || row[getK('costo')] || '0'; if(typeof price === 'string') price = price.replace('€','').replace(',','.').trim();
+                        return { cod: parseInt(row[getK('cod')]), theme: row[getK('theme')], sub_theme: row[getK('sub')] || "", set_name: row[getK('name')], pieces: parseInt(row[getK('pieces')] || 0), price: parseFloat(price || 0), retirement_date: row[getK('date')] || row[getK('ritiro')] };
+                    }).filter(r => r.cod);
+                    const BATCH = 50; for(let i=0; i<rows.length; i+=BATCH) { await supabase.from('lego_sets').upsert(rows.slice(i, i+BATCH), { onConflict: 'cod' }); }
+                    const now = new Date().toISOString(); await supabase.from('app_settings').upsert({ key: 'last_data_update', value: now });
+                    safeUpdate('lastUpdateDate', new Date().toLocaleDateString('it-IT')); alert(`Completato!`); fetchAllData();
+                } catch (err) {} e.target.value = '';
+            }});
+        });
 
         function exportToCSV() {
             if (filteredData.length === 0) { alert("Nessun dato!"); return; }
@@ -517,9 +517,12 @@
             const years = [...new Set(allData.map(d => d._date.getFullYear()))].sort().filter(y => !isNaN(y) && y < 2099);
             
             const themeOptions = '<option value="">Seleziona...</option>' + themes.map(t => `<option value="${t}">${t}</option>`).join('');
+            
             document.getElementById('themeFilter').innerHTML = '<option value="all">Tutti i Temi</option>' + themes.map(t => `<option value="${t}">${t}</option>`).join('');
             document.getElementById('yearFilter').innerHTML = '<option value="all">Tutti gli Anni</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+            
             document.getElementById('newSetTheme').innerHTML = themeOptions;
+
             applyFilters();
         }
 
@@ -530,6 +533,11 @@
         }
 
         function sortTable(k) { if(currentSort.key === k) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc'; else { currentSort.key = k; currentSort.direction = 'asc'; } render(); }
+        // MISSING CSV, EXPORT, TOGGLE DASHBOARD, TOGGLE VIEW FAVS, UPDATE CHARTS - Same as v8.2
+        // Just ensuring script integrity
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('themeFilter').addEventListener('change', applyFilters);
+        document.getElementById('yearFilter').addEventListener('change', applyFilters);
     </script>
 </body>
 </html>
