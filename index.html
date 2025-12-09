@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v8.0</title>
+    <title>iTavix LEGO Manager v8.1/title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -11,7 +11,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>tailwind.config = { darkMode: 'class' }</script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -26,46 +26,10 @@
         .transition-colors { transition-duration: 200ms; }
         header { flex-shrink: 0; }
         .lego-bg { background-image: url('https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80'); background-size: cover; background-position: center; }
-        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        .delay-100 { animation-delay: 0.1s; } .delay-200 { animation-delay: 0.2s; } .delay-300 { animation-delay: 0.3s; }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 
 <body class="h-screen w-screen overflow-hidden flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
-
-    <div id="welcomeOverlay" class="fixed inset-0 z-[200] lego-bg flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm"></div>
-        <div class="relative z-10 w-full max-w-4xl p-6 h-full overflow-y-auto flex flex-col justify-center">
-            <div class="text-center mb-8 fade-in-up">
-                <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-lg">
-                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">Benvenuto in <span class="text-yellow-400">iTavix</span></h1>
-                <p class="text-gray-300 text-lg">Il Gestionale Definitivo per Collezionisti LEGO</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
-                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-100 flex items-start gap-4">
-                    <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 shrink-0"><i data-lucide="search" class="w-8 h-8"></i></div>
-                    <div><h3 class="text-xl font-bold text-white mb-1">Database & Ricerca</h3><p class="text-sm text-gray-300">Accedi a un database con migliaia di set. Filtra per Anno, Tema o cerca per Codice. Monitora le date di ritiro (EOL).</p></div>
-                </div>
-                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-200 flex items-start gap-4">
-                    <div class="bg-yellow-500/20 p-3 rounded-xl text-yellow-400 shrink-0"><i data-lucide="box" class="w-8 h-8"></i></div>
-                    <div><h3 class="text-xl font-bold text-white mb-1">Gestisci Collezione</h3><p class="text-sm text-gray-300">Distingui tra set <b>Posseduti</b> (📦) e <b>Desiderati</b> (❤️). Tieni traccia delle quantità per i tuoi investimenti.</p></div>
-                </div>
-                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-300 flex items-start gap-4">
-                    <div class="bg-green-500/20 p-3 rounded-xl text-green-400 shrink-0"><i data-lucide="trending-up" class="w-8 h-8"></i></div>
-                    <div><h3 class="text-xl font-bold text-white mb-1">Analisi Valore</h3><p class="text-sm text-gray-300">Dashboard grafica automatica. Calcola il valore totale della tua collezione e analizza la distribuzione dei temi.</p></div>
-                </div>
-                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-300 flex items-start gap-4">
-                    <div class="bg-purple-500/20 p-3 rounded-xl text-purple-400 shrink-0"><i data-lucide="users" class="w-8 h-8"></i></div>
-                    <div><h3 class="text-xl font-bold text-white mb-1">Community Price</h3><p class="text-sm text-gray-300">Contribuisci suggerendo aggiornamenti di prezzo. I dati sono verificati e condivisi con tutti gli utenti.</p></div>
-                </div>
-            </div>
-            <div class="text-center fade-in-up delay-300">
-                <button onclick="closeWelcome()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full text-lg shadow-xl hover:shadow-2xl transition transform hover:scale-105 active:scale-95">Inizia Ora 🚀</button>
-                <p class="mt-4 text-xs text-gray-500">v8.0 • Cliccando accetti di gestire i tuoi mattoncini responsabilmente 😉</p>
-            </div>
-        </div>
-    </div>
 
     <div id="loginOverlay" class="fixed inset-0 z-[100] lego-bg flex items-center justify-center transition-opacity duration-500">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
@@ -101,44 +65,6 @@
         </div>
     </div>
 
-    <div id="addSetModal" class="fixed inset-0 z-[65] bg-black/50 hidden flex items-center justify-center">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md mx-4 border border-gray-200 dark:border-gray-700">
-            <h3 class="text-xl font-bold mb-4 dark:text-white flex items-center gap-2"><i data-lucide="package-plus" class="text-blue-500"></i> Nuovo Set</h3>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-1">
-                    <label class="text-xs font-bold text-gray-500 uppercase">Codice Set *</label>
-                    <input type="number" id="newSetCod" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:border-blue-500" placeholder="es. 75192">
-                </div>
-                <div class="col-span-1">
-                    <label class="text-xs font-bold text-gray-500 uppercase">Tema</label>
-                    <input type="text" id="newSetTheme" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:border-blue-500" placeholder="es. Star Wars">
-                </div>
-                <div class="col-span-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase">Nome Set *</label>
-                    <input type="text" id="newSetName" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:border-blue-500" placeholder="es. Millennium Falcon">
-                </div>
-                <div class="col-span-1">
-                    <label class="text-xs font-bold text-gray-500 uppercase">Pezzi</label>
-                    <input type="number" id="newSetPieces" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:border-blue-500" placeholder="0">
-                </div>
-                <div class="col-span-1">
-                    <label class="text-xs font-bold text-gray-500 uppercase">Prezzo (€)</label>
-                    <input type="number" step="0.01" id="newSetPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:border-blue-500" placeholder="0.00">
-                </div>
-                <div class="col-span-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase">Data Ritiro</label>
-                    <input type="date" id="newSetDate" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:border-blue-500">
-                </div>
-            </div>
-            
-            <div class="flex gap-2 mt-6">
-                <button onclick="document.getElementById('addSetModal').classList.add('hidden')" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Annulla</button>
-                <button onclick="addNewSet()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-lg">Aggiungi</button>
-            </div>
-        </div>
-    </div>
-
     <div id="adminModal" class="fixed inset-0 z-[70] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-2xl mx-4 h-[80vh] flex flex-col">
             <div class="flex justify-between items-center mb-4">
@@ -163,9 +89,7 @@
                 <div><h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div>
             </div>
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
-                <button id="btnAddSet" onclick="openAddSetModal()" class="hidden p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition" title="Aggiungi Set"><i data-lucide="plus" class="w-4 h-4"></i></button>
                 <button id="btnAdmin" onclick="openAdminPanel()" class="hidden p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Admin"><i data-lucide="shield-alert" class="w-4 h-4"></i></button>
-                
                 <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition"><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i><i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i></button>
                 <button onclick="toggleDashboard()" class="flex items-center px-3 py-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 rounded-lg hover:bg-purple-200 transition gap-2 text-xs md:text-sm font-bold"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> <span class="hidden sm:inline">Dash</span></button>
                 <button id="btnToggleFavs" onclick="toggleViewFavorites()" class="flex items-center px-3 py-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-lg hover:bg-yellow-200 transition gap-2 text-xs md:text-sm font-bold"><i data-lucide="box" class="w-4 h-4"></i> <span id="favBtnText">Collezione</span></button>
@@ -219,7 +143,7 @@
         </main>
 
         <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v8.0</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
+            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v8.1</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
         </footer>
     </div>
 
@@ -241,14 +165,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             initDarkMode();
-            if(!localStorage.getItem('itavix_welcome_seen')) document.getElementById('welcomeOverlay').classList.remove('hidden');
             try {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 checkSession();
             } catch (e) { alert("Config Error"); }
         });
 
-        function closeWelcome() { document.getElementById('welcomeOverlay').classList.add('hidden'); localStorage.setItem('itavix_welcome_seen', 'true'); }
         function safeUpdate(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
         function initDarkMode() { if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
         function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('color-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); updateCharts(); }
@@ -275,10 +197,7 @@
 
         function unlockApp(email) {
             currentUserEmail = email;
-            if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                document.getElementById('btnAdmin').classList.remove('hidden');
-                document.getElementById('btnAddSet').classList.remove('hidden'); // SHOW ADD BUTTON
-            }
+            if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) document.getElementById('btnAdmin').classList.remove('hidden');
             document.getElementById('loginOverlay').classList.add('opacity-0', 'pointer-events-none');
             setTimeout(() => document.getElementById('loginOverlay').style.display = 'none', 500);
             document.getElementById('appContent').classList.remove('blur-content', 'opacity-50');
@@ -303,49 +222,17 @@
             render(); updateDashboardStats();
         }
 
-        // --- NEW: ADD SET LOGIC ---
-        function openAddSetModal() { document.getElementById('addSetModal').classList.remove('hidden'); }
-        async function addNewSet() {
-            const cod = parseInt(document.getElementById('newSetCod').value);
-            const theme = document.getElementById('newSetTheme').value;
-            const name = document.getElementById('newSetName').value;
-            const pieces = parseInt(document.getElementById('newSetPieces').value || 0);
-            const price = parseFloat(document.getElementById('newSetPrice').value || 0);
-            const date = document.getElementById('newSetDate').value; // Format: YYYY-MM-DD
-
-            if(!cod || !name) { alert("Codice e Nome sono obbligatori!"); return; }
-
-            // Formatta la data per il display se non vuota
-            let formattedDate = date ? new Date(date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) : "";
-
-            const newSet = {
-                cod: cod,
-                theme: theme,
-                set_name: name,
-                pieces: pieces,
-                price: price,
-                retirement_date: formattedDate
-            };
-
-            const { error } = await supabase.from('lego_sets').insert(newSet);
-            if(error) alert("Errore inserimento (forse il codice esiste già?): " + error.message);
-            else {
-                alert("Set aggiunto con successo!");
-                document.getElementById('addSetModal').classList.add('hidden');
-                // Pulisci form
-                document.getElementById('newSetCod').value = '';
-                document.getElementById('newSetName').value = '';
-                fetchAllData();
-            }
-        }
-
-        // --- PRICE LOGIC ---
+        // --- NEW PRICE LOGIC ---
         function openPriceModal(cod) { 
-            currentEditingCod = cod; document.getElementById('modalSetCode').innerText = cod; 
-            document.getElementById('suggestPrice').value = ''; document.getElementById('suggestSource').value = ''; 
+            currentEditingCod = cod; 
+            document.getElementById('modalSetCode').innerText = cod; 
+            document.getElementById('suggestPrice').value = ''; 
+            document.getElementById('suggestSource').value = ''; 
+            
             const title = document.getElementById('modalTitle');
             if(currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) title.innerText = "Aggiorna Prezzo (Admin)";
             else title.innerText = "Suggerisci Prezzo";
+
             document.getElementById('priceModal').classList.remove('hidden'); 
         }
         function closePriceModal() { document.getElementById('priceModal').classList.add('hidden'); currentEditingCod = null; }
@@ -353,12 +240,18 @@
         async function submitSuggestion() {
             const price = parseFloat(document.getElementById('suggestPrice').value); const source = document.getElementById('suggestSource').value;
             if(!price || !source) { alert("Compila tutti i campi"); return; }
+            
             if (currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                 const { error } = await supabase.from('lego_sets').update({ price: price }).eq('cod', currentEditingCod);
-                if(error) alert("Errore: " + error.message); else { alert("Aggiornato!"); closePriceModal(); fetchAllData(); }
+                if(error) alert("Errore aggiornamento: " + error.message);
+                else {
+                    alert("Prezzo aggiornato immediatamente!");
+                    closePriceModal();
+                    fetchAllData();
+                }
             } else {
                 const { error } = await supabase.from('price_suggestions').insert({ set_cod: currentEditingCod, user_email: currentUserEmail, new_price: price, source: source });
-                if(error) alert("Errore: " + error.message); else { alert("Inviato!"); closePriceModal(); }
+                if(error) alert("Errore: " + error.message); else { alert("Suggerimento inviato in approvazione!"); closePriceModal(); }
             }
         }
 
