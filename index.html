@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v10.5</title>
+    <title>iTavix LEGO Manager v10.6</title>
     
     <link rel="icon" type="image/png" href="logo.png">
 
@@ -28,7 +28,6 @@
         .transition-colors { transition-duration: 200ms; }
         header { flex-shrink: 0; }
         
-        /* Sfondo Login/Welcome */
         .lego-bg {
             background-image: url('https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80');
             background-size: cover;
@@ -39,7 +38,6 @@
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }
-        
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -48,58 +46,33 @@
 
     <div id="welcomeOverlay" class="fixed inset-0 z-[200] lego-bg flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm"></div>
-        
         <div class="relative z-10 w-full max-w-4xl p-6 h-full overflow-y-auto flex flex-col justify-center">
-            
             <div class="text-center mb-8 fade-in-up">
                 <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-lg">
                 <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">Benvenuto in <span class="text-yellow-400">iTavix</span></h1>
                 <p class="text-gray-300 text-lg">Il Gestionale Definitivo per Collezionisti LEGO</p>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
-                
                 <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-100 flex items-start gap-4">
                     <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 shrink-0"><i data-lucide="search" class="w-8 h-8"></i></div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-1">Database & Ricerca</h3>
-                        <p class="text-sm text-gray-300">Accedi a un database completo. Filtra per Anno, Tema, Codice e monitora le date di ritiro (EOL).</p>
-                    </div>
+                    <div><h3 class="text-xl font-bold text-white mb-1">Database & Ricerca</h3><p class="text-sm text-gray-300">Accedi a un database completo. Filtra per Anno, Tema, Codice e monitora le date di ritiro (EOL).</p></div>
                 </div>
-
                 <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-200 flex items-start gap-4">
                     <div class="bg-yellow-500/20 p-3 rounded-xl text-yellow-400 shrink-0"><i data-lucide="box" class="w-8 h-8"></i></div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-1">Gestisci Collezione</h3>
-                        <p class="text-sm text-gray-300">Distingui tra set <b>Posseduti</b> (📦) e <b>Desiderati</b> (❤️). Tieni traccia delle quantità per i tuoi investimenti.</p>
-                    </div>
+                    <div><h3 class="text-xl font-bold text-white mb-1">Gestisci Collezione</h3><p class="text-sm text-gray-300">Distingui tra set <b>Posseduti</b> (📦) e <b>Desiderati</b> (❤️). Tieni traccia delle quantità.</p></div>
                 </div>
-
                 <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-300 flex items-start gap-4">
                     <div class="bg-green-500/20 p-3 rounded-xl text-green-400 shrink-0"><i data-lucide="trending-up" class="w-8 h-8"></i></div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-1">Analisi Valore</h3>
-                        <p class="text-sm text-gray-300">Confronta Prezzo di Listino vs Mercato. Dashboard grafica con distribuzione temi e valore totale.</p>
-                    </div>
+                    <div><h3 class="text-xl font-bold text-white mb-1">Analisi Valore</h3><p class="text-sm text-gray-300">Confronta Prezzo di Listino vs Mercato. Dashboard grafica con distribuzione temi e valore totale.</p></div>
                 </div>
-
                 <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up delay-300 flex items-start gap-4">
                     <div class="bg-purple-500/20 p-3 rounded-xl text-purple-400 shrink-0"><i data-lucide="gem" class="w-8 h-8"></i></div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-1">Esclusive & D2C</h3>
-                        <p class="text-sm text-gray-300">Identifica facilmente i set Esclusivi LEGO o Limited Edition grazie all'icona gemma 💎 e ai filtri dedicati.</p>
-                    </div>
+                    <div><h3 class="text-xl font-bold text-white mb-1">Esclusive & D2C</h3><p class="text-sm text-gray-300">Identifica facilmente i set Esclusivi LEGO grazie all'icona gemma 💎.</p></div>
                 </div>
-
             </div>
-
             <div class="text-center fade-in-up delay-300">
-                <button onclick="closeWelcome()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full text-lg shadow-xl hover:shadow-2xl transition transform hover:scale-105 active:scale-95">
-                    Inizia Ora 🚀
-                </button>
-                <p class="mt-4 text-xs text-gray-500">v10.5 • Cliccando accetti di gestire i tuoi mattoncini responsabilmente 😉</p>
+                <button onclick="closeWelcome()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full text-lg shadow-xl hover:shadow-2xl transition transform hover:scale-105 active:scale-95">Inizia Ora 🚀</button>
             </div>
-
         </div>
     </div>
 
@@ -108,17 +81,16 @@
         <div class="bg-white/95 backdrop-blur p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center relative z-10 border border-white/20">
             <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-20 h-20 object-contain mx-auto mb-4 drop-shadow-md">
             <h2 class="text-3xl font-bold text-gray-800 tracking-tight">iTavix Manager</h2>
-            <p class="text-gray-500 text-sm mt-2 mb-6 font-medium">Accedi al tuo database LEGO</p>
+            <p class="text-gray-500 text-sm mt-2 mb-6 font-medium">v10.6 (Stable)</p>
             <div class="space-y-4 text-left">
                 <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="tua@email.com"></div>
                 <div><label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="••••••••"></div>
                 <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium"></div>
                 <div class="flex gap-3 pt-2">
-                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform active:scale-95">Accedi</button>
-                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition shadow hover:shadow-md transform active:scale-95">Registrati</button>
+                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg">Accedi</button>
+                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition shadow">Registrati</button>
                 </div>
             </div>
-            <p class="mt-6 text-xs text-gray-400">Powered by iTavix Cloud & Supabase</p>
         </div>
     </div>
 
@@ -135,10 +107,10 @@
                     <input type="checkbox" id="editIsExclusive" class="w-5 h-5 accent-purple-600 rounded">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="text-xs font-bold text-gray-500 uppercase">Listino (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                    <div><label class="text-xs font-bold text-gray-500 uppercase">Mercato (€)</label><input type="number" step="0.01" id="suggestMarketPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                    <div><label class="text-xs font-bold text-gray-500 uppercase">Listino (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></div>
+                    <div><label class="text-xs font-bold text-gray-500 uppercase">Mercato (€)</label><input type="number" step="0.01" id="suggestMarketPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></div>
                 </div>
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte (Info per Admin)</label><input type="text" id="suggestSource" placeholder="es. Brickset, Amazon..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte (Info per Admin)</label><input type="text" id="suggestSource" placeholder="es. Brickset, Amazon..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></div>
             </div>
             <div class="flex gap-2 mt-6">
                 <button onclick="closePriceModal()" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium">Annulla</button>
@@ -174,12 +146,8 @@
     </div>
 
     <div id="appContent" class="flex flex-col h-full blur-content transition-all duration-500 opacity-50">
-        
         <header class="flex-none bg-white dark:bg-gray-800 shadow-sm z-30 relative px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-10 h-10 object-contain">
-                <div><h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div>
-            </div>
+            <div class="flex items-center gap-3 w-full md:w-auto"><img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-10 h-10 object-contain"><div><h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div></div>
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
                 <button id="btnAddSet" onclick="openAddSetModal()" class="hidden p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition" title="Nuovo Set"><i data-lucide="plus" class="w-4 h-4"></i></button>
                 <button id="btnAdmin" onclick="openAdminPanel()" class="hidden p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Moderazione"><img src="logo.png" class="w-4 h-4 object-contain"></button>
@@ -238,7 +206,7 @@
         </main>
 
         <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v10.5</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
+            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v10.6</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
         </footer>
     </div>
 
@@ -275,8 +243,8 @@
 
         function updateDashboardStats() {
             let dbValue = 0; let collectionValue = 0; let collectionCount = 0;
-            allData.forEach(d => dbValue += d._market);
-            allData.forEach(d => { const lib = userLibrary.get(d.cod); if (lib && lib.status === 'owned') { collectionValue += d._market * lib.qty; collectionCount++; } });
+            allData.forEach(d => dbValue += (d._market || 0)); // Safety check for market price
+            allData.forEach(d => { const lib = userLibrary.get(d.cod); if (lib && lib.status === 'owned') { collectionValue += (d._market || 0) * lib.qty; collectionCount++; } });
             safeUpdate('statDBCount', allData.length.toLocaleString());
             safeUpdate('statDBValue', `€ ${dbValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
             safeUpdate('statCollCount', collectionCount.toLocaleString());
@@ -295,7 +263,10 @@
             try {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 checkSession();
-            } catch (e) { alert("Config Error"); }
+            } catch (e) { 
+                console.error(e);
+                alert("Errore Inizializzazione Supabase: " + e.message); 
+            }
         });
 
         function closeWelcome() { document.getElementById('welcomeOverlay').classList.add('hidden'); localStorage.setItem('itavix_welcome_seen', 'true'); }
@@ -355,7 +326,7 @@
             render(); updateDashboardStats();
         }
 
-        // ADD SET
+        // --- NEW: ADD SET LOGIC ---
         function openAddSetModal() { document.getElementById('addSetModal').classList.remove('hidden'); }
         async function addNewSet() {
             const cod = parseInt(document.getElementById('newSetCod').value);
@@ -363,29 +334,50 @@
             const name = document.getElementById('newSetName').value;
             const pieces = parseInt(document.getElementById('newSetPieces').value || 0);
             const price = parseFloat(document.getElementById('newSetPrice').value || 0);
-            const isExclusive = document.getElementById('newSetExclusive').checked;
+            const isExclusive = document.getElementById('newSetExclusive').checked; // Legge il checkbox
             const date = document.getElementById('newSetDate').value;
+
             if(!cod || !name) { alert("Codice e Nome sono obbligatori!"); return; }
             let formattedDate = date ? new Date(date).toISOString().split('T')[0] : "";
-            const { error } = await supabase.from('lego_sets').insert({ cod: cod, theme: theme, set_name: name, pieces: pieces, price: price, market_price: price, is_exclusive: isExclusive, retirement_date: formattedDate });
+
+            const { error } = await supabase.from('lego_sets').insert({ 
+                cod: cod, 
+                theme: theme, 
+                set_name: name, 
+                pieces: pieces, 
+                price: price, 
+                market_price: price, 
+                is_exclusive: isExclusive, 
+                retirement_date: formattedDate 
+            });
+
             if(error) alert("Errore inserimento: " + error.message);
-            else { alert("Set aggiunto!"); document.getElementById('addSetModal').classList.add('hidden'); fetchAllData(); }
+            else {
+                alert("Set aggiunto!");
+                document.getElementById('addSetModal').classList.add('hidden');
+                fetchAllData();
+            }
         }
 
-        // PRICE LOGIC
+        // --- PRICE LOGIC (MANUALE COMPLETO) ---
         function openPriceModal(cod) { 
-            currentEditingCod = cod; document.getElementById('modalSetCode').innerText = cod; 
+            currentEditingCod = cod; 
+            document.getElementById('modalSetCode').innerText = cod; 
             document.getElementById('bricksetLink').href = `https://brickset.com/sets/${cod}-1`;
+            
+            // Trova i dati attuali
             const set = allData.find(d => d.cod === cod);
             if(set) {
                 document.getElementById('suggestPrice').value = set._price; 
                 document.getElementById('suggestMarketPrice').value = set._market;
-                document.getElementById('editIsExclusive').checked = set.is_exclusive === true;
+                document.getElementById('editIsExclusive').checked = set.is_exclusive === true; // Imposta lo stato del checkbox
             }
             document.getElementById('suggestSource').value = ''; 
+            
             const title = document.getElementById('modalTitle');
             if(currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) title.innerText = "Aggiorna Dati (Admin)";
             else title.innerText = "Suggerisci Dati";
+            
             document.getElementById('priceModal').classList.remove('hidden'); 
         }
         function closePriceModal() { document.getElementById('priceModal').classList.add('hidden'); currentEditingCod = null; }
@@ -393,13 +385,14 @@
         async function submitSuggestion() {
             const price = parseFloat(document.getElementById('suggestPrice').value); 
             const market = parseFloat(document.getElementById('suggestMarketPrice').value);
-            const isExcl = document.getElementById('editIsExclusive').checked;
+            const isExcl = document.getElementById('editIsExclusive').checked; // Leggi stato
             const source = document.getElementById('suggestSource').value;
             
             if (currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                 const updateData = { is_exclusive: isExcl };
                 if(!isNaN(price)) updateData.price = price;
                 if(!isNaN(market)) updateData.market_price = market;
+                
                 const { error } = await supabase.from('lego_sets').update(updateData).eq('cod', currentEditingCod);
                 if(error) alert("Errore: " + error.message); else { alert("Aggiornato!"); closePriceModal(); fetchAllData(); }
             } else {
@@ -463,14 +456,20 @@
             let allRows = []; let from = 0; const step = 1000; let keep = true;
             try { 
                 while(keep) { 
+                    // FETCH COMPLETA
                     const { data, error } = await supabase.from('lego_sets').select('*').range(from, from + step - 1); 
-                    if (error) throw error; 
+                    if (error) { 
+                        // ERROR HANDLING PIÙ DETTAGLIATO
+                        console.error("Supabase Error:", error); 
+                        throw new Error(error.message + " (Code: " + error.code + ")");
+                    }
                     if (data && data.length > 0) { allRows = allRows.concat(data); from += step; if (data.length < step) keep = false; } else keep = false; 
                 } 
                 processData(allRows); 
             } catch (e) { 
-                console.error(e); 
-                alert("Errore caricamento dati. Controlla la console."); 
+                console.error("Errore fetchAllData:", e); 
+                // MOSTRA L'ERRORE ALL'UTENTE
+                alert("ERRORE CARICAMENTO DATI:\n" + e.message + "\n\nSuggerimento: Esegui lo script SQL di ripristino su Supabase."); 
             } finally { loader.classList.add('hidden'); }
         }
         
@@ -529,6 +528,8 @@
         }
 
         function sortTable(k) { if(currentSort.key === k) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc'; else { currentSort.key = k; currentSort.direction = 'asc'; } render(); }
+        // MISSING CSV, EXPORT, TOGGLE DASHBOARD, TOGGLE VIEW FAVS, UPDATE CHARTS - Same as v8.2
+        // Just ensuring script integrity
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('themeFilter').addEventListener('change', applyFilters);
         document.getElementById('yearFilter').addEventListener('change', applyFilters);
