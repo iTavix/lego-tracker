@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix LEGO Manager v6.2</title>
+    <title>iTavix LEGO Manager v6.3</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -24,41 +24,57 @@
         .set-thumb { transition: transform 0.2s ease-in-out; cursor: pointer; background: white; }
         .set-thumb:hover { transform: scale(3.5); z-index: 50; position: relative; border-radius: 4px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); border: 2px solid white; }
         .transition-colors { transition-duration: 200ms; }
-        /* Fix per evitare che l'header collassi */
         header { flex-shrink: 0; }
+
+        /* Sfondo Login LEGO */
+        .lego-bg {
+            background-image: url('https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
+        }
     </style>
 </head>
 
 <body class="h-screen w-screen overflow-hidden flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
 
-    <div id="loginOverlay" class="fixed inset-0 z-[100] bg-gray-900 flex items-center justify-center transition-opacity duration-500">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center">
-            <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-16 h-16 object-contain mx-auto mb-4">
-            <h2 class="text-2xl font-bold text-gray-800">iTavix Manager</h2>
-            <p class="text-gray-500 text-sm mt-2 mb-6">v6.2 (Stats Fix)</p>
+    <div id="loginOverlay" class="fixed inset-0 z-[100] lego-bg flex items-center justify-center transition-opacity duration-500">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        
+        <div class="bg-white/95 backdrop-blur p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center relative z-10 border border-white/20">
+            <img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" alt="Logo" class="w-20 h-20 object-contain mx-auto mb-4 drop-shadow-md">
+            <h2 class="text-3xl font-bold text-gray-800 tracking-tight">iTavix Manager</h2>
+            <p class="text-gray-500 text-sm mt-2 mb-6 font-medium">Accedi al tuo database LEGO</p>
+            
             <div class="space-y-4 text-left">
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="text" id="email" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"></div>
-                <div><label class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" id="password" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800"></div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Email</label>
+                    <input type="text" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="tua@email.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-gray-800 bg-gray-50" placeholder="••••••••">
+                </div>
                 <div id="authMessage" class="hidden p-3 rounded-lg text-sm text-center font-medium"></div>
                 <div class="flex gap-3 pt-2">
-                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">Accedi</button>
-                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition">Registrati</button>
+                    <button id="btnLogin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg hover:shadow-xl transform active:scale-95">Accedi</button>
+                    <button id="btnSignup" class="flex-1 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-200 transition shadow hover:shadow-md transform active:scale-95">Registrati</button>
                 </div>
             </div>
+            <p class="mt-6 text-xs text-gray-400">Powered by iTavix Cloud & Supabase</p>
         </div>
     </div>
 
     <div id="priceModal" class="fixed inset-0 z-[60] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-sm mx-4">
-            <h3 class="text-lg font-bold mb-4 dark:text-white">Aggiorna Prezzo</h3>
+            <h3 class="text-lg font-bold mb-4 dark:text-white" id="modalTitle">Aggiorna Prezzo</h3>
             <p class="text-sm text-gray-500 mb-4">Set: <span id="modalSetCode" class="font-mono font-bold"></span></p>
             <div class="space-y-3">
                 <div><label class="text-xs font-bold text-gray-500 uppercase">Prezzo (€)</label><input type="number" step="0.01" id="suggestPrice" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
-                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Amazon..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="text-xs font-bold text-gray-500 uppercase">Fonte</label><input type="text" id="suggestSource" placeholder="es. Amazon, Lego..." class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"></div>
             </div>
             <div class="flex gap-2 mt-6">
                 <button onclick="closePriceModal()" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Annulla</button>
-                <button onclick="submitSuggestion()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Invia</button>
+                <button onclick="submitSuggestion()" class="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold">Salva</button>
             </div>
         </div>
     </div>
@@ -66,7 +82,7 @@
     <div id="adminModal" class="fixed inset-0 z-[70] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-2xl mx-4 h-[80vh] flex flex-col">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold dark:text-white">Moderazione</h3>
+                <h3 class="text-lg font-bold dark:text-white">Moderazione Prezzi</h3>
                 <button onclick="document.getElementById('adminModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500"><i data-lucide="x"></i></button>
             </div>
             <div class="flex-1 overflow-y-auto custom-scroll">
@@ -74,7 +90,7 @@
                     <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0"><tr><th class="p-2">Set</th><th class="p-2">Utente</th><th class="p-2">Prezzo</th><th class="p-2">Fonte</th><th class="p-2 text-right">Azioni</th></tr></thead>
                     <tbody id="adminTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
                 </table>
-                <p id="noSuggestions" class="text-center text-gray-500 mt-10 hidden">Nessun dato.</p>
+                <p id="noSuggestions" class="text-center text-gray-500 mt-10 hidden">Nessun suggerimento in attesa.</p>
             </div>
         </div>
     </div>
@@ -106,7 +122,7 @@
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm"><h3 class="text-xs font-bold uppercase text-gray-500 mb-2">Temi</h3><div class="h-32"><canvas id="chartThemes"></canvas></div></div>
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm"><h3 class="text-xs font-bold uppercase text-gray-500 mb-2">Ritiro</h3><div class="h-32"><canvas id="chartRetirement"></canvas></div></div>
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center">
-                    <p class="text-sm text-gray-500">Valore Intero Database</p>
+                    <p class="text-sm text-gray-500">Valore Intero DB</p>
                     <p class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="dashDBValue">€ 0</p>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm text-center">
@@ -119,24 +135,11 @@
         <main class="flex-1 overflow-y-auto custom-scroll relative bg-gray-50 dark:bg-gray-900">
             <div id="tableLoader" class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-20 flex flex-col items-center justify-center hidden"><div class="loader mb-2"></div><p class="text-gray-500 text-xs animate-pulse">Sync...</p></div>
             <div class="p-2 md:p-4 space-y-3 pb-6">
-                
                 <div id="quickStats" class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-xs md:text-sm bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div class="border-r border-gray-100 dark:border-gray-700">
-                        <span class="text-gray-400 block text-[10px] uppercase">DB Totale</span> 
-                        <b class="text-gray-800 dark:text-gray-200" id="statDBCount">-</b> / <b class="text-blue-600" id="statDBValue">-</b>
-                    </div>
-                    <div class="border-r border-gray-100 dark:border-gray-700">
-                        <span class="text-gray-400 block text-[10px] uppercase">Mia Collezione</span> 
-                        <b class="text-gray-800 dark:text-gray-200" id="statCollCount">-</b> / <b class="text-green-600 font-bold" id="statCollValue">-</b>
-                    </div>
-                    <div class="border-r border-gray-100 dark:border-gray-700">
-                        <span class="text-gray-400 block text-[10px] uppercase">Ritiro 2025</span> 
-                        <b class="text-orange-500" id="statRetiring">-</b>
-                    </div>
-                    <div>
-                        <span class="text-gray-400 block text-[10px] uppercase">Pezzi Totali</span> 
-                        <b class="text-blue-500" id="statPieces">-</b>
-                    </div>
+                    <div class="border-r border-gray-100 dark:border-gray-700"><span class="text-gray-400 block text-[10px] uppercase">DB Totale</span> <b class="text-gray-800 dark:text-gray-200" id="statDBCount">-</b> / <b class="text-blue-600" id="statDBValue">-</b></div>
+                    <div class="border-r border-gray-100 dark:border-gray-700"><span class="text-gray-400 block text-[10px] uppercase">Mia Collezione</span> <b class="text-gray-800 dark:text-gray-200" id="statCollCount">-</b> / <b class="text-green-600 font-bold" id="statCollValue">-</b></div>
+                    <div class="border-r border-gray-100 dark:border-gray-700"><span class="text-gray-400 block text-[10px] uppercase">Ritiro 2025</span> <b class="text-orange-500" id="statRetiring">-</b></div>
+                    <div><span class="text-gray-400 block text-[10px] uppercase">Pezzi Totali</span> <b class="text-blue-500" id="statPieces">-</b></div>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-2">
@@ -166,7 +169,7 @@
         </main>
 
         <footer class="flex-none bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 text-center z-30">
-            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v6.2</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
+            <p class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500"><span class="font-bold text-gray-600 dark:text-gray-300">iTavix v6.3</span> • Aggiornato: <span id="lastUpdateDate">-</span></p>
         </footer>
     </div>
 
@@ -245,13 +248,41 @@
             render(); updateDashboardStats();
         }
 
-        function openPriceModal(cod) { currentEditingCod = cod; document.getElementById('modalSetCode').innerText = cod; document.getElementById('suggestPrice').value = ''; document.getElementById('suggestSource').value = ''; document.getElementById('priceModal').classList.remove('hidden'); }
+        // --- NEW PRICE LOGIC (ADMIN DIRECT UPDATE) ---
+        function openPriceModal(cod) { 
+            currentEditingCod = cod; 
+            document.getElementById('modalSetCode').innerText = cod; 
+            document.getElementById('suggestPrice').value = ''; 
+            document.getElementById('suggestSource').value = ''; 
+            
+            // Check if admin, change title
+            const title = document.getElementById('modalTitle');
+            if(currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) title.innerText = "Aggiorna Prezzo (Admin)";
+            else title.innerText = "Suggerisci Prezzo";
+
+            document.getElementById('priceModal').classList.remove('hidden'); 
+        }
         function closePriceModal() { document.getElementById('priceModal').classList.add('hidden'); currentEditingCod = null; }
+        
         async function submitSuggestion() {
             const price = parseFloat(document.getElementById('suggestPrice').value); const source = document.getElementById('suggestSource').value;
             if(!price || !source) { alert("Compila tutti i campi"); return; }
-            const { error } = await supabase.from('price_suggestions').insert({ set_cod: currentEditingCod, user_email: currentUserEmail, new_price: price, source: source });
-            if(error) alert("Errore: " + error.message); else { alert("Suggerimento inviato!"); closePriceModal(); }
+            
+            // ADMIN CHECK
+            if (currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                // Direct Update
+                const { error } = await supabase.from('lego_sets').update({ price: price }).eq('cod', currentEditingCod);
+                if(error) alert("Errore aggiornamento: " + error.message);
+                else {
+                    alert("Prezzo aggiornato immediatamente!");
+                    closePriceModal();
+                    fetchAllData(); // Refresh UI
+                }
+            } else {
+                // Standard Suggestion
+                const { error } = await supabase.from('price_suggestions').insert({ set_cod: currentEditingCod, user_email: currentUserEmail, new_price: price, source: source });
+                if(error) alert("Errore: " + error.message); else { alert("Suggerimento inviato in approvazione!"); closePriceModal(); }
+            }
         }
 
         async function openAdminPanel() { document.getElementById('adminModal').classList.remove('hidden'); loadSuggestions(); }
@@ -267,15 +298,12 @@
                 tbody.appendChild(tr);
             }); lucide.createIcons();
         }
-        
         async function approveSuggestion(id, cod, price) {
-            // Fix: Wait for update before reloading to prevent glitches
             await supabase.from('lego_sets').update({ price: price }).eq('cod', cod);
             await supabase.from('price_suggestions').update({ status: 'approved' }).eq('id', id);
             await loadSuggestions(); 
             await fetchAllData();
         }
-        
         async function rejectSuggestion(id) { await supabase.from('price_suggestions').update({ status: 'rejected' }).eq('id', id); loadSuggestions(); }
 
         function refreshView() { if (showOnlyCollection) applyFilters(); else { render(); updateDashboardStats(); } updateCharts(); }
@@ -286,7 +314,7 @@
         }
         async function loadLastUpdateDate() { try { const { data } = await supabase.from('app_settings').select('value').eq('key', 'last_data_update').single(); if (data) safeUpdate('lastUpdateDate', new Date(data.value).toLocaleDateString('it-IT')); } catch(e) {} }
 
-        // CSV (No changes)
+        // CSV
         document.getElementById('csvInput').addEventListener('change', function(e) {
             const file = e.target.files[0]; if (!file) return;
             Papa.parse(file, { header: true, skipEmptyLines: true, delimiter: "", complete: async function(results) {
@@ -327,34 +355,16 @@
         function toggleViewFavorites() { showOnlyCollection = !showOnlyCollection; const btn = document.getElementById('btnToggleFavs'); if (showOnlyCollection) { btn.className = "flex items-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition gap-2 text-xs md:text-sm font-bold"; document.getElementById('favBtnText').innerText = "Mostra Tutti"; } else { btn.className = "flex items-center px-3 py-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 rounded-lg hover:bg-yellow-200 transition gap-2 text-xs md:text-sm font-bold"; document.getElementById('favBtnText').innerText = "La Mia Collezione"; } applyFilters(); }
 
         function updateDashboardStats() {
-            // NEW STATS LOGIC
-            let dbValue = 0;
-            let collectionValue = 0;
-            let collectionCount = 0;
-
-            // 1. Calculate Full DB Value (based on allData, not filtered)
+            let dbValue = 0; let collectionValue = 0; let collectionCount = 0;
             allData.forEach(d => dbValue += d._price);
+            allData.forEach(d => { const lib = userLibrary.get(d.cod); if (lib && lib.status === 'owned') { collectionValue += d._price * lib.qty; collectionCount++; } });
 
-            // 2. Calculate My Collection
-            allData.forEach(d => {
-                const lib = userLibrary.get(d.cod);
-                if (lib && lib.status === 'owned') {
-                    collectionValue += d._price * lib.qty;
-                    collectionCount++;
-                }
-            });
-
-            // Update UI safely
             safeUpdate('statDBCount', allData.length.toLocaleString());
             safeUpdate('statDBValue', `€ ${dbValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
-            
             safeUpdate('statCollCount', collectionCount.toLocaleString());
             safeUpdate('statCollValue', `€ ${collectionValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
-            
             safeUpdate('statRetiring', filteredData.filter(d => d._date.getFullYear() === 2025).length);
             safeUpdate('statPieces', filteredData.reduce((a,b) => a+(b.pieces||0), 0).toLocaleString());
-
-            // Update Dash Panel specific elements
             safeUpdate('dashDBValue', `€ ${dbValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
             safeUpdate('dashCollectionValue', `€ ${collectionValue.toLocaleString('it-IT', {minimumFractionDigits:0})}`);
         }
@@ -378,9 +388,9 @@
                 const now = new Date(); const diffDays = Math.ceil((row._date - now) / (1000 * 60 * 60 * 24)); 
                 let retireClass = "text-gray-600 dark:text-gray-400"; if (row._date.getFullYear() === 2025) retireClass = diffDays < 180 ? "text-red-600 font-bold bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded" : "text-orange-600 font-bold";
                 const lib = userLibrary.get(row.cod); const isOwned = lib && lib.status === 'owned'; const isWanted = lib && lib.status === 'wanted';
-                const btnOwned = `<button type="button" onclick="updateSetStatus(${row.cod}, 'owned')" class="p-1.5 rounded-md transition ${isOwned ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'text-gray-300 hover:text-green-500'}"><i data-lucide="package" class="w-4 h-4"></i></button>`;
-                const btnWanted = `<button type="button" onclick="updateSetStatus(${row.cod}, 'wanted')" class="p-1.5 rounded-md transition ${isWanted ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-300 hover:text-red-500'}"><i data-lucide="heart" class="w-4 h-4"></i></button>`;
-                let qtyControls = isOwned ? `<div class="flex items-center gap-1 text-xs font-mono mt-1 justify-center"><button type="button" onclick="updateQty(${row.cod}, -1)" class="hover:bg-gray-200 px-1 rounded">-</button><span class="font-bold text-gray-800 dark:text-white">${lib.qty}</span><button type="button" onclick="updateQty(${row.cod}, 1)" class="hover:bg-gray-200 px-1 rounded">+</button></div>` : '';
+                const btnOwned = `<button onclick="updateSetStatus(${row.cod}, 'owned')" class="p-1.5 rounded-md transition ${isOwned ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'text-gray-300 hover:text-green-500'}"><i data-lucide="package" class="w-4 h-4"></i></button>`;
+                const btnWanted = `<button onclick="updateSetStatus(${row.cod}, 'wanted')" class="p-1.5 rounded-md transition ${isWanted ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-300 hover:text-red-500'}"><i data-lucide="heart" class="w-4 h-4"></i></button>`;
+                let qtyControls = isOwned ? `<div class="flex items-center gap-1 text-xs font-mono mt-1 justify-center"><button onclick="updateQty(${row.cod}, -1)" class="hover:bg-gray-200 px-1 rounded">-</button><span class="font-bold text-gray-800 dark:text-white">${lib.qty}</span><button onclick="updateQty(${row.cod}, 1)" class="hover:bg-gray-200 px-1 rounded">+</button></div>` : '';
                 tr.innerHTML = `
                     <td class="p-3 text-center align-top"><div class="flex justify-center gap-1">${btnOwned}${btnWanted}</div>${qtyControls}</td>
                     <td class="p-3 text-center align-top"><div class="relative group w-12 h-12 mx-auto"><img src="${row._img}" loading="lazy" class="w-full h-full object-contain set-thumb bg-white rounded p-0.5 border border-gray-200" onerror="this.style.display='none'"></div></td>
@@ -390,7 +400,7 @@
                     <td class="p-3 text-sm text-right text-gray-500 dark:text-gray-400 align-middle">${row.pieces||0}</td>
                     <td class="p-3 text-sm text-right font-medium text-green-700 dark:text-green-400 whitespace-nowrap align-middle">
                         ${row._price > 0 ? '€ '+row._price.toFixed(2) : '-'}
-                        <button type="button" onclick="openPriceModal(${row.cod})" class="ml-1 text-gray-400 hover:text-blue-500 text-xs"><i data-lucide="edit-2" class="w-3 h-3 inline"></i></button>
+                        <button onclick="openPriceModal(${row.cod})" class="ml-1 text-gray-400 hover:text-blue-500 text-xs"><i data-lucide="edit-2" class="w-3 h-3 inline"></i></button>
                     </td>
                     <td class="p-3 text-sm text-right font-medium whitespace-nowrap align-middle"><span class="${retireClass}">${row.retirement_date}</span></td>
                     <td class="p-3 text-center align-middle"><div class="flex justify-center gap-2"><a href="https://www.bricklink.com/v2/catalog/catalogitem.page?S=${row.cod}-1" target="_blank" title="BrickLink" class="text-gray-400 hover:text-blue-500"><i data-lucide="external-link" class="w-4 h-4"></i></a><a href="https://www.amazon.it/s?k=lego+${row.cod}" target="_blank" title="Amazon" class="text-gray-400 hover:text-orange-500"><i data-lucide="shopping-cart" class="w-4 h-4"></i></a></div></td>
