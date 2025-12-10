@@ -35,70 +35,116 @@
 
 <body class="h-screen w-screen overflow-hidden flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
 
-    <!-- WELCOME OVERLAY -->
+        <!-- WELCOME OVERLAY / GUIDA -->
     <div id="welcomeOverlay" class="fixed inset-0 z-[200] lego-bg flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm"></div>
-        <div class="relative z-10 w-full max-w-4xl p-6 h-full overflow-y-auto flex flex-col justify-center">
-            <div class="text-center mb-8 fade-in-up">
-                <img src="logo.png"
-                     onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'"
-                     class="w-20 h-20 mx-auto mb-4 object-contain drop-shadow-lg">
-                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
-                    Benvenuto in <span class="text-yellow-400">iTavix</span>
-                </h1>
-                <p class="text-gray-300 text-lg">Il Gestionale Definitivo per Collezionisti LEGO</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
-                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up flex items-start gap-4" style="animation-delay: 0.1s">
-                    <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 shrink-0">
-                        <i data-lucide="search" class="w-8 h-8"></i>
-                    </div>
+        <div class="relative z-10 w-full max-w-5xl p-6 h-full overflow-y-auto flex flex-col">
+            <!-- Testata -->
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <img src="logo.png"
+                         onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'"
+                         class="w-12 h-12 object-contain drop-shadow-lg">
                     <div>
-                        <h3 class="text-xl font-bold text-white mb-1">Database & Ricerca</h3>
-                        <p class="text-sm text-gray-300">Filtra per Anno, Tema, Codice.</p>
+                        <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight">
+                            Benvenuto in <span class="text-yellow-400">iTavix Manager</span>
+                        </h1>
+                        <p class="text-xs text-gray-300 mt-1">
+                            Guida rapida alle funzioni principali dell’app.
+                        </p>
                     </div>
                 </div>
-
-                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up flex items-start gap-4" style="animation-delay: 0.2s">
-                    <div class="bg-yellow-500/20 p-3 rounded-xl text-yellow-400 shrink-0">
-                        <i data-lucide="box" class="w-8 h-8"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-1">Gestisci Collezione</h3>
-                        <p class="text-sm text-gray-300">Posseduti, Desiderati, quantità.</p>
-                    </div>
-                </div>
-
-                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up flex items-start gap-4" style="animation-delay: 0.3s">
-                    <div class="bg-green-500/20 p-3 rounded-xl text-green-400 shrink-0">
-                        <i data-lucide="trending-up" class="w-8 h-8"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-1">Analisi Valore</h3>
-                        <p class="text-sm text-gray-300">Listino vs Mercato, dashboard grafica.</p>
-                    </div>
-                </div>
-
-                <div class="bg-white/10 border border-white/20 p-6 rounded-2xl backdrop-blur fade-in-up flex items-start gap-4" style="animation-delay: 0.4s">
-                    <div class="bg-purple-500/20 p-3 rounded-xl text-purple-400 shrink-0">
-                        <i data-lucide="gem" class="w-8 h-8"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white mb-1">Esclusive</h3>
-                        <p class="text-sm text-gray-300">Identifica facilmente i set D2C.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center fade-in-up" style="animation-delay: 0.5s">
                 <button onclick="closeWelcomeForUser()"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full text-lg shadow-xl">
-                    Inizia Ora 🚀
+                        class="text-gray-300 hover:text-white text-sm flex items-center gap-1">
+                    <span>Chiudi</span>
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Contenuto -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4 text-sm">
+                <!-- Sezione: Come usare i filtri -->
+                <section class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur">
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="filter" class="w-5 h-5 text-blue-300"></i>
+                        Come usare i filtri
+                    </h2>
+                    <p class="text-gray-300 mb-1">
+                        Usa la barra di ricerca per trovare rapidamente un set per codice o parte del nome.
+                    </p>
+                    <p class="text-gray-300 mb-1">
+                        I menu a destra permettono di limitare l’elenco per Tema e Anno di ritiro.
+                    </p>
+                    <p class="text-gray-400 text-xs">
+                        I filtri si combinano tra loro: ricerca + Tema + Anno lavorano insieme.
+                    </p>
+                </section>
+
+                <!-- Sezione: Gestione Collezione -->
+                <section class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur">
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="box" class="w-5 h-5 text-yellow-300"></i>
+                        Gestione Collezione
+                    </h2>
+                    <p class="text-gray-300 mb-1">
+                        Nella colonna “Stato” usa le icone per segnare un set come Posseduto o Desiderato.
+                    </p>
+                    <p class="text-gray-300 mb-1">
+                        Quando un set è Posseduto, puoi regolare la quantità con i pulsanti - / + sotto alle icone.
+                    </p>
+                    <p class="text-gray-400 text-xs">
+                        Il pulsante “Collezione” in alto mostra solo i set presenti nella tua libreria personale.
+                    </p>
+                </section>
+
+                <!-- Sezione: Prezzi & Suggerimenti -->
+                <section class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur">
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="tags" class="w-5 h-5 text-green-300"></i>
+                        Prezzi & Suggerimenti
+                    </h2>
+                    <p class="text-gray-300 mb-1">
+                        Clicca sull’icona matita accanto al Listino per aprire la scheda prezzi del set.
+                    </p>
+                    <p class="text-gray-300 mb-1">
+                        Se sei admin puoi aggiornare direttamente Listino, Mercato ed Esclusiva; altrimenti puoi inviare un suggerimento che verrà moderato.
+                    </p>
+                    <p class="text-gray-400 text-xs">
+                        Le variazioni si riflettono nelle statistiche e nella dashboard in tempo reale.
+                    </p>
+                </section>
+
+                <!-- Sezione: Pezzi e link -->
+                <section class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur">
+                    <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="puzzle" class="w-5 h-5 text-purple-300"></i>
+                        Pezzi & link esterni
+                    </h2>
+                    <p class="text-gray-300 mb-1">
+                        Cliccando sul numero dei pezzi apri direttamente l’inventario del set su BrickLink.
+                    </p>
+                    <p class="text-gray-300 mb-1">
+                        Le icone nella colonna “Link” portano rapidamente alle pagine del set su BrickLink e Amazon.
+                    </p>
+                    <p class="text-gray-400 text-xs">
+                        Nella scheda dettaglio set (clic sull’immagine) ritrovi gli stessi collegamenti e i dati principali del set.
+                    </p>
+                </section>
+            </div>
+
+            <!-- CTA finale -->
+            <div class="mt-auto pt-2 flex flex-col md:flex-row items-center justify-between gap-3">
+                <p class="text-xs text-gray-400">
+                    Questa guida si apre automaticamente al tuo primo accesso, ma puoi rivederla in qualsiasi momento dal pulsante “Info” in alto.
+                </p>
+                <button onclick="closeWelcomeForUser()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full text-sm shadow-lg">
+                    Ho capito, inizia!
                 </button>
             </div>
         </div>
     </div>
+
 
     <!-- LOGIN OVERLAY -->
     <div id="loginOverlay" class="fixed inset-0 z-[100] lego-bg flex items-center justify-center transition-opacity duration-500">
@@ -376,9 +422,7 @@
                     <h1 class="text-lg md:text-xl font-bold leading-tight">iTavix Manager</h1>
                     <p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p>
                     <p class="text-[10px] text-gray-400 dark:text-gray-500">
-                        Ultimo aggiornamento: <span id="lastUpdateDate">-</span>
-                    </p>
-                </div>
+                    
             </div>
 
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
@@ -1568,5 +1612,11 @@ document.getElementById('detailPiecesLink').href = invUrl;
             render();
         }
     </script>
+
+    <footer class="flex-none bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 text-[10px] text-gray-500 dark:text-gray-400 px-4 py-1 flex justify-between items-center">
+        <span>Ultimo aggiornamento dati: <span id="lastUpdateDate">-</span></span>
+        <span>iTavix Manager</span>
+    </footer>
+
 </body>
 </html>
