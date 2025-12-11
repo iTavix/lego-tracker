@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix Manager v12.4</title>
+    <title>iTavix Manager v12.13 (Batch Update)</title>
     <link rel="icon" type="image/png" href="logo.png">
 
-    <!-- Librerie -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -35,11 +34,9 @@
 
 <body class="h-screen w-screen overflow-hidden flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
 
-        <!-- WELCOME OVERLAY / GUIDA -->
     <div id="welcomeOverlay" class="fixed inset-0 z-[200] lego-bg flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-gray-900/90 backdrop-blur-sm"></div>
         <div class="relative z-10 w-full max-w-5xl p-6 h-full overflow-y-auto flex flex-col">
-            <!-- Testata -->
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
                     <img src="logo.png"
@@ -61,9 +58,7 @@
                 </button>
             </div>
 
-            <!-- Contenuto -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4 text-sm">
-                <!-- Sezione: Come usare i filtri -->
                 <section class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur">
                     <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
                         <i data-lucide="filter" class="w-5 h-5 text-blue-300"></i>
@@ -80,7 +75,6 @@
                     </p>
                 </section>
 
-                <!-- Sezione: Gestione Collezione -->
                 <section class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur">
                     <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
                         <i data-lucide="box" class="w-5 h-5 text-yellow-300"></i>
@@ -97,7 +91,6 @@
                     </p>
                 </section>
 
-                <!-- Sezione: Prezzi & Suggerimenti -->
                 <section class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur">
                     <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
                         <i data-lucide="tags" class="w-5 h-5 text-green-300"></i>
@@ -114,7 +107,6 @@
                     </p>
                 </section>
 
-                <!-- Sezione: Pezzi e link -->
                 <section class="bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur">
                     <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
                         <i data-lucide="puzzle" class="w-5 h-5 text-purple-300"></i>
@@ -132,7 +124,6 @@
                 </section>
             </div>
 
-            <!-- CTA finale -->
             <div class="mt-auto pt-2 flex flex-col md:flex-row items-center justify-between gap-3">
                 <p class="text-xs text-gray-400">
                     Questa guida si apre automaticamente al tuo primo accesso, ma puoi rivederla in qualsiasi momento dal pulsante “Info” in alto.
@@ -146,7 +137,6 @@
     </div>
 
 
-    <!-- LOGIN OVERLAY -->
     <div id="loginOverlay" class="fixed inset-0 z-[100] lego-bg flex items-center justify-center transition-opacity duration-500">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
         <div class="bg-white/95 backdrop-blur p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center relative z-10 border border-white/20">
@@ -182,7 +172,19 @@
         </div>
     </div>
 
-    <!-- PRICE MODAL -->
+    <div id="updateModal" class="fixed inset-0 z-[200] bg-black/80 flex items-center justify-center hidden">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md text-center">
+            <h3 class="text-xl font-bold mb-2 dark:text-white">Aggiornamento Minifigs...</h3>
+            <p class="text-xs text-gray-500 mb-4">Non chiudere questa finestra.</p>
+            
+            <div class="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700 mb-2 overflow-hidden">
+                <div id="updateProgress" class="bg-blue-600 h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            
+            <p class="text-sm font-mono" id="updateStatus">0 / 0</p>
+        </div>
+    </div>
+
     <div id="priceModal" class="fixed inset-0 z-[60] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-sm mx-4">
             <h3 class="text-lg font-bold mb-4 dark:text-white" id="modalTitle">Aggiorna Dati</h3>
@@ -236,7 +238,6 @@
         </div>
     </div>
 
-    <!-- ADD SET MODAL -->
     <div id="addSetModal" class="fixed inset-0 z-[65] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md mx-4 border border-gray-200 dark:border-gray-700">
             <h3 class="text-xl font-bold mb-4 dark:text-white flex items-center gap-2">
@@ -245,8 +246,16 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-1">
                     <label class="text-xs font-bold text-gray-500 uppercase">Codice *</label>
-                    <input type="number" id="newSetCod"
-                           class="w-full p-2 border rounded dark:bg-gray-700 dark:text-white outline-none">
+                    <div class="flex items-center gap-2 w-full">
+                        <input type="number" id="newSetCod"
+                               class="flex-1 w-full min-w-0 p-2 border rounded dark:bg-gray-700 dark:text-white outline-none"
+                               placeholder="12345">
+                        <button type="button" onclick="fetchRebrickableData()"
+                                class="flex-none p-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md"
+                                title="Auto-fill da Rebrickable">
+                            <i data-lucide="cloud-download" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="col-span-1">
                     <label class="text-xs font-bold text-gray-500 uppercase">Tema</label>
@@ -260,11 +269,20 @@
                     <input type="text" id="newSetName"
                            class="w-full p-2 border rounded dark:bg-gray-700 dark:text-white outline-none">
                 </div>
+                
                 <div class="col-span-1">
                     <label class="text-xs font-bold text-gray-500 uppercase">Pezzi</label>
                     <input type="number" id="newSetPieces"
                            class="w-full p-2 border rounded dark:bg-gray-700 dark:text-white outline-none">
                 </div>
+                <div class="col-span-1">
+                    <label class="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
+                        Minifigs <i data-lucide="smile" class="w-3 h-3"></i>
+                    </label>
+                    <input type="number" id="newSetMinifigs" value="0"
+                           class="w-full p-2 border rounded dark:bg-gray-700 dark:text-white outline-none">
+                </div>
+
                 <div class="col-span-1">
                     <label class="text-xs font-bold text-gray-500 uppercase">Listino (€)</label>
                     <input type="number" step="0.01" id="newSetPrice"
@@ -296,7 +314,6 @@
         </div>
     </div>
 
-    <!-- ADMIN MODAL -->
     <div id="adminModal" class="fixed inset-0 z-[70] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-2xl mx-4 h-[80vh] flex flex-col">
             <div class="flex justify-between items-center mb-4">
@@ -329,8 +346,7 @@
         </div>
     </div>
 
-       <!-- MODAL DETTAGLIO SET -->
-    <div id="setDetailModal" class="fixed inset-0 z-[62] bg-black/50 hidden flex items-center justify-center">
+       <div id="setDetailModal" class="fixed inset-0 z-[62] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md mx-4 border border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-start mb-4">
                 <h3 class="text-xl font-bold dark:text-white flex items-center gap-2">
@@ -364,7 +380,7 @@
                             <p class="text-xs text-gray-400 uppercase">Tema</p>
                             <p id="detailTheme" class="text-xs bg-gray-100 dark:bg-gray-700 dark:text-gray-200 px-2 py-1 rounded inline-block"></p>
                         </div>
-                        <<div>
+                        <div>
     <p class="text-xs text-gray-400 uppercase">Pezzi</p>
     <p class="text-sm">
         <a id="detailPiecesLink"
@@ -410,10 +426,8 @@
         </div>
     </div>
 
-    <!-- APP CONTENT -->
     <div id="appContent" class="flex flex-col h-full blur-content transition-all duration-500 opacity-50">
 
-        <!-- HEADER -->
         <header class="flex-none bg-white dark:bg-gray-800 shadow-sm z-30 relative px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3 w-full md:w-auto">
                 <img src="logo.png"
@@ -427,6 +441,13 @@
             </div>
 
             <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
+                
+                <button id="btnUpdateMinifigs" onclick="batchUpdateMinifigs()"
+                        class="hidden p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition"
+                        title="Aggiorna tutte le Minifigs (Batch)">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                </button>
+
                 <button id="btnAddSet" onclick="openAddSetModal()"
                         class="hidden p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition"
                         title="Nuovo Set">
@@ -451,7 +472,6 @@
                     <span class="hidden sm:inline">Dash</span>
                 </button>
 
-                <!-- INFO: riapre la welcome -->
                 <button onclick="openWelcomeOverlay()
                         "class="p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 hover:text-blue-500 rounded-lg transition"
                         title="Info">
@@ -488,7 +508,6 @@
             </div>
         </header>
 
-        <!-- DASHBOARD -->
         <div id="dashboardPanel"
              class="hidden flex-none bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 transition-all overflow-y-auto max-h-[40vh]">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
@@ -518,7 +537,6 @@
             </div>
         </div>
 
-        <!-- MAIN -->
         <main class="flex-1 overflow-y-auto custom-scroll relative bg-gray-50 dark:bg-gray-900">
             <div id="tableLoader"
                  class="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-20 flex flex-col items-center justify-center hidden">
@@ -527,7 +545,6 @@
             </div>
 
             <div class="p-2 md:p-4 space-y-3 pb-6 max-w-7xl mx-auto">
-                <!-- STATS -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-xs md:text-sm bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                     <div class="border-r border-gray-100 dark:border-gray-700">
                         <span class="text-gray-400 block text-[10px] uppercase">DB Totale</span>
@@ -549,7 +566,6 @@
                     </div>
                 </div>
 
-                <!-- FILTRI -->
                 <div class="flex flex-col md:flex-row gap-2">
                     <div class="relative flex-1">
                         <i data-lucide="search"
@@ -567,7 +583,6 @@
                     </select>
                 </div>
 
-                <!-- TABELLA -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto min-h-[400px]">
                     <table class="w-full text-left border-collapse min-w-[900px]">
                         <thead class="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 sticky top-0 z-10 text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
@@ -578,6 +593,11 @@
                             <th class="p-3 cursor-pointer hover:text-blue-500" onclick="sortTable('theme')">Tema</th>
                             <th class="p-3 cursor-pointer hover:text-blue-500" onclick="sortTable('set_name')">Nome</th>
                             <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('pieces')">Pezzi</th>
+                            
+                            <th class="p-3 text-right cursor-pointer hover:text-blue-500" title="Minifigures">
+                                <i data-lucide="smile" class="w-4 h-4 inline"></i>
+                            </th>
+
                             <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('price')">Listino</th>
                             <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('market_price')">Mercato</th>
                             <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="sortTable('retirement_date')">Ritiro</th>
@@ -592,12 +612,19 @@
                 </div>
             </div>
         </main>
+
+        <footer class="flex-none bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 text-[10px] text-gray-500 dark:text-gray-400 px-4 py-1 flex justify-center items-center gap-6 z-40">
+            <span>Ultimo aggiornamento dati: <span id="lastUpdateDate">-</span></span>
+            <span>iTavix Manager</span>
+        </footer>
+
     </div>
 
     <script>
         const SUPABASE_URL = 'https://vdihgygqxjuhnppwktlq.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkaWhneWdxeGp1aG5wcHdrdGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNDYyNzYsImV4cCI6MjA4MDYyMjI3Nn0.A-emTugF0lfrfHlIm7M6HXUFNwaDs_TRPE3NvLqJo2o';
         const ADMIN_EMAIL = 'clauditavi@gmail.com';
+        const API_KEY = 'ebb1182d1fd6d6878f58136f06d5956e';
 
         let supabase;
         let allData = [];
@@ -628,12 +655,168 @@
                 document.getElementById('btnSignup').addEventListener('click', () => handleAuth('signup'));
                 document.getElementById('csvInput').addEventListener('change', handleCsvUpload);
 
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                // Configurazione Supabase con persistenza sessione
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    auth: {
+                        persistSession: true,
+                        storage: window.localStorage,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true
+                    }
+                });
+
+                // Ascolta i cambiamenti di stato per il login automatico
+                supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+                        if (session && session.user) {
+                            // Sblocca l'app solo se non siamo già loggati con questo utente
+                            if (currentUserEmail !== session.user.email) {
+                                unlockApp(session.user.email);
+                            }
+                        }
+                    }
+                });
+
                 checkSession();
             } catch (e) {
                 alert("Config Error: " + e.message);
             }
         };
+
+        // --- BATCH UPDATE FUNCTION ---
+        async function batchUpdateMinifigs() {
+            if (currentUserEmail.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+
+            // Filtra solo quelli che hanno 0 o null minifigs
+            const setsToUpdate = allData.filter(d => !d.minifigs || d.minifigs === 0);
+            if (setsToUpdate.length === 0) {
+                alert("Tutti i set hanno già le minifigs aggiornate!");
+                return;
+            }
+
+            if(!confirm(`Trovati ${setsToUpdate.length} set senza minifigs. Vuoi avviare l'aggiornamento automatico? Potrebbe richiedere qualche minuto.`)) return;
+
+            const modal = document.getElementById('updateModal');
+            const progress = document.getElementById('updateProgress');
+            const status = document.getElementById('updateStatus');
+            modal.classList.remove('hidden');
+
+            let updatedCount = 0;
+            const total = setsToUpdate.length;
+
+            for (let i = 0; i < total; i++) {
+                const set = setsToUpdate[i];
+                status.innerText = `Aggiorno ${set.cod}... (${i + 1}/${total})`;
+                progress.style.width = `${((i + 1) / total) * 100}%`;
+
+                try {
+                    // Chiama Rebrickable Minifigs
+                    const mfUrl = `https://rebrickable.com/api/v3/lego/sets/${set.cod}-1/minifigs/`;
+                    const res = await fetch(mfUrl, {
+                        headers: { 'Authorization': 'key ' + API_KEY, 'Accept': 'application/json' }
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        const count = data.count || 0;
+
+                        // Aggiorna Supabase SOLO se count > 0
+                        if (count > 0) {
+                            await supabase
+                                .from('lego_sets')
+                                .update({ minifigs: count })
+                                .eq('cod', set.cod);
+                            
+                            // Aggiorna dato locale per feedback immediato
+                            const localSet = allData.find(d => d.cod === set.cod);
+                            if(localSet) localSet.minifigs = count;
+                            updatedCount++;
+                        }
+                    }
+                    
+                    // Pausa tattica per non superare limiti API (1 secondo)
+                    await new Promise(r => setTimeout(r, 1000));
+
+                } catch (e) {
+                    console.error(`Errore set ${set.cod}`, e);
+                }
+            }
+
+            modal.classList.add('hidden');
+            alert(`Finito! Aggiornati ${updatedCount} set.`);
+            render(); // Ridisegna la tabella
+        }
+
+        async function fetchRebrickableData() {
+            const cod = document.getElementById('newSetCod').value;
+            const apiKey = API_KEY;
+
+            if (!cod) {
+                alert("Inserisci prima un codice set (es. 10255).");
+                return;
+            }
+
+            const btn = event.currentTarget;
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '<div class="loader border-white border-t-transparent w-4 h-4"></div>';
+            btn.disabled = true;
+
+            try {
+                // Rebrickable endpoint SET
+                const url = `https://rebrickable.com/api/v3/lego/sets/${cod}-1/`;
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'Authorization': 'key ' + apiKey, 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 404) throw new Error("Set non trovato su Rebrickable.");
+                    if (response.status === 401) throw new Error("API Key non valida.");
+                    throw new Error("Errore API: " + response.status);
+                }
+
+                const data = await response.json();
+
+                // Auto-compilazione
+                document.getElementById('newSetName').value = data.name;
+                document.getElementById('newSetPieces').value = data.num_parts;
+                
+                // Stima data ritiro (31 Dicembre dell'anno di uscita se non c'è altro)
+                if (data.year) {
+                    document.getElementById('newSetDate').value = `${data.year}-12-31`;
+                }
+
+                // FETCH MINIFIGS COUNT
+                // Rebrickable ha un endpoint separato per le minifig
+                try {
+                    const mfUrl = `https://rebrickable.com/api/v3/lego/sets/${cod}-1/minifigs/`;
+                    const mfRes = await fetch(mfUrl, {
+                        method: 'GET',
+                        headers: { 'Authorization': 'key ' + apiKey, 'Accept': 'application/json' }
+                    });
+                    if (mfRes.ok) {
+                        const mfData = await mfRes.json();
+                        // mfData.count ti dice quante righe di minifig ci sono
+                        if (mfData.count) {
+                            document.getElementById('newSetMinifigs').value = mfData.count;
+                        }
+                    }
+                } catch (e) {
+                    console.log("Minifig fetch error ignored", e);
+                }
+
+                alert(`Dati scaricati: ${data.name} (${data.year})`);
+
+            } catch (error) {
+                console.error(error);
+                alert("Errore: " + error.message);
+            } finally {
+                btn.innerHTML = originalIcon;
+                btn.disabled = false;
+                if (window.lucide) window.lucide.createIcons();
+            }
+        }
 
         function openWelcomeOverlay() {
             document.getElementById('welcomeOverlay').classList.remove('hidden');
@@ -736,6 +919,7 @@
             if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                 document.getElementById('btnAdmin').classList.remove('hidden');
                 document.getElementById('btnAddSet').classList.remove('hidden');
+                document.getElementById('btnUpdateMinifigs').classList.remove('hidden'); // Show Update Button
             }
 
             document.getElementById('loginOverlay').classList.add('opacity-0', 'pointer-events-none');
@@ -833,6 +1017,7 @@
             const theme = document.getElementById('newSetTheme').value;
             const name = document.getElementById('newSetName').value;
             const pieces = parseInt(document.getElementById('newSetPieces').value || 0);
+            const minifigs = parseInt(document.getElementById('newSetMinifigs').value || 0);
             const price = parseFloat(document.getElementById('newSetPrice').value || 0);
             const isExclusive = document.getElementById('newSetExclusive').checked;
             const date = document.getElementById('newSetDate').value;
@@ -851,6 +1036,7 @@
                     theme: theme,
                     set_name: name,
                     pieces: pieces,
+                    minifigs: minifigs, // Nuova Colonna
                     price: price,
                     market_price: price,
                     is_exclusive: isExclusive,
@@ -1522,6 +1708,12 @@ document.getElementById('detailPiecesLink').href = invUrl;
                     ? '<i data-lucide="gem" class="w-3.5 h-3.5 text-purple-500 inline ml-1" title="Esclusiva"></i>'
                     : '';
 
+                // Colonna Minifig
+                let mfDisplay = `<span class="text-gray-300">-</span>`;
+                if (row.minifigs && row.minifigs > 0) {
+                    mfDisplay = `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 font-bold text-xs"><i data-lucide="smile" class="w-3 h-3"></i>${row.minifigs}</span>`;
+                }
+
                 tr.innerHTML = `
                     <td class="p-3 text-center align-top">
                         <div class="flex justify-center gap-1">
@@ -1551,14 +1743,16 @@ document.getElementById('detailPiecesLink').href = invUrl;
                         ${row.set_name} ${exclIcon}
                     </td>
                     <td class="p-3 text-sm text-right text-gray-500 dark:text-gray-400 align-middle">
-    <a href="https://www.bricklink.com/catalogItemInv.asp?S=${row.cod}-1"
-       target="_blank"
-       class="underline decoration-dotted underline-offset-2 hover:text-blue-600"
-       title="Vedi inventario pezzi su BrickLink">
-        ${row.pieces || 0}
-    </a>
-</td>
-
+                        <a href="https://www.bricklink.com/catalogItemInv.asp?S=${row.cod}-1"
+                           target="_blank"
+                           class="underline decoration-dotted underline-offset-2 hover:text-blue-600"
+                           title="Vedi inventario pezzi su BrickLink">
+                            ${row.pieces || 0}
+                        </a>
+                    </td>
+                    <td class="p-3 text-sm text-right align-middle">
+                        ${mfDisplay}
+                    </td>
                     <td class="p-3 text-sm text-right font-medium text-gray-800 dark:text-gray-200 whitespace-nowrap align-middle">
                         ${row._price > 0 ? '€ ' + row._price.toFixed(2) : '-'}
                         <button onclick="openPriceModal(${row.cod})"
@@ -1571,20 +1765,6 @@ document.getElementById('detailPiecesLink').href = invUrl;
                     </td>
                     <td class="p-3 text-sm text-right font-medium whitespace-nowrap align-middle">
                         <span class="${retireClass}">${dateDisplay}</span>
-                    </td>
-                    <td class="p-3 text-center align-middle">
-                        <div class="flex justify-center gap-2">
-                            <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?S=${row.cod}-1"
-                               target="_blank" title="BrickLink"
-                               class="text-gray-400 hover:text-blue-500">
-                                <i data-lucide="external-link" class="w-4 h-4"></i>
-                            </a>
-                            <a href="https://www.amazon.it/s?k=lego+${row.cod}"
-                               target="_blank" title="Amazon"
-                               class="text-gray-400 hover:text-orange-500">
-                                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-                            </a>
-                        </div>
                     </td>
                     <td class="p-3 text-center align-middle">
     <button onclick="deleteSet(${row.cod})"
@@ -1613,11 +1793,6 @@ document.getElementById('detailPiecesLink').href = invUrl;
             render();
         }
     </script>
-
-    <footer class="flex-none bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 text-[10px] text-gray-500 dark:text-gray-400 px-4 py-1 flex justify-between items-center">
-        <span>Ultimo aggiornamento dati: <span id="lastUpdateDate">-</span></span>
-        <span>iTavix Manager</span>
-    </footer>
 
 </body>
 </html>
