@@ -9,7 +9,8 @@ let supabase;
 let allData = [];
 let filteredData = [];
 let userLibrary = new Map();
-let currentSort = { key: 'retirement_date', direction: 'asc' };
+// MODIFICA 1: Ordinamento di default per TEMA
+let currentSort = { key: 'theme', direction: 'asc' };
 let showOnlyCollection = false;
 let showOnlyExclusives = false;
 let currentUserEmail = "";
@@ -31,7 +32,6 @@ window.onload = function() {
         if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
         window.initDarkMode();
         
-        // Listener
         const sInput = document.getElementById('searchInput'); if(sInput) sInput.addEventListener('input', window.applyFilters);
         const tFilter = document.getElementById('themeFilter'); if(tFilter) tFilter.addEventListener('change', window.applyFilters);
         const yFilter = document.getElementById('yearFilter'); if(yFilter) yFilter.addEventListener('change', window.applyFilters);
@@ -49,7 +49,7 @@ window.onload = function() {
     } catch(e) { console.error("Init Error: ", e); }
 };
 
-// --- FUNZIONI GLOBALI (ESPOSTE A WINDOW) ---
+// --- FUNZIONI GLOBALI ---
 
 window.safeUpdate = function(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
 window.formatDateItalian = function(d) { if (!d) return "-"; const date = new Date(d); return isNaN(date.getTime()) ? d : date.toLocaleDateString('it-IT'); }
@@ -220,6 +220,7 @@ window.applyFilters = function() {
     window.updateCharts();
 }
 
+// --- RENDER ---
 window.render = function() {
     const container = document.getElementById('viewContainer');
     if(!container) return;
@@ -238,17 +239,23 @@ window.render = function() {
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
 }
 
+// MODIFICA 2: Aggiunta classe min-w-[90px] alla th dell'immagine
 window.renderTable = function(container) {
     const table = document.createElement('table');
     table.className = "w-full text-left text-sm min-w-[900px]";
     table.innerHTML = `
     <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0 text-xs font-bold text-gray-600 dark:text-gray-300 uppercase">
         <tr>
-            <th class="p-3 w-28 text-center">Stato</th><th class="p-3 w-24 text-center">Img</th>
-            <th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('cod')">Cod</th><th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('theme')">Tema</th><th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('set_name')">Nome</th>
+            <th class="p-3 w-28 text-center">Stato</th>
+            <th class="p-3 w-24 min-w-[90px] text-center">Img</th>
+            <th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('cod')">Cod</th>
+            <th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('theme')">Tema</th>
+            <th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('set_name')">Nome</th>
             <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="window.updateSort('pieces')" title="Pezzi"><img src="brick.png" class="w-4 h-4 inline"></th>
             <th class="p-3 text-right" title="Minifigs"><img src="testa.png" class="w-4 h-4 inline"></th>
-            <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="window.updateSort('price')">Listino</th><th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="window.updateSort('market_price')">Mercato</th><th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="window.updateSort('retirement_date')">Ritiro</th>
+            <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="window.updateSort('price')">Listino</th>
+            <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="window.updateSort('market_price')">Mercato</th>
+            <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="window.updateSort('retirement_date')">Ritiro</th>
             <th class="p-3 text-center">Azioni</th>
         </tr>
     </thead>
@@ -269,7 +276,6 @@ window.renderTable = function(container) {
         const btnWanted = `<button onclick="window.updateSetStatus(${row.cod}, 'wanted')" class="p-1.5 rounded-md transition ${isWanted ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-300 hover:text-red-500'}"><i data-lucide="heart" class="w-4 h-4"></i></button>`;
         let qtyControls = isOwned ? `<div class="flex items-center gap-1 text-xs font-mono mt-1 justify-center"><button onclick="window.updateQty(${row.cod}, -1)">-</button><span class="font-bold">${lib.qty}</span><button onclick="window.updateQty(${row.cod}, 1)">+</button></div>` : '';
 
-        // UPDATED IMAGE SIZE TO W-20
         tr.innerHTML = `
             <td class="p-3 text-center align-top"><div class="flex justify-center gap-1">${btnOwned}${btnWanted}</div>${qtyControls}</td>
             <td class="p-3 text-center"><img src="${row._img}" loading="lazy" class="w-20 h-20 object-contain mx-auto cursor-pointer bg-white rounded p-1 border border-gray-200" onclick="window.openSetDetailModal(${row.cod})"></td>
@@ -401,7 +407,7 @@ window.closeSetDetailModal = function() {
     document.getElementById('setDetailModal').classList.remove('flex'); 
 }
 
-// --- ADMIN & EDIT ---
+// --- ADMIN ---
 window.openEditSetModal = function(cod) {
     const set = allData.find(d => d.cod === cod); if(!set) return;
     document.getElementById('editSetCod').value = set.cod;
@@ -434,6 +440,7 @@ window.updateDashboardStats = function() {
     let dbValue = 0; let collectionValue = 0; let collectionCount = 0; let totalPaid = 0;
     allData.forEach(d => dbValue += d._market);
     allData.forEach(d => { const lib = userLibrary.get(d.cod); if (lib && lib.status === 'owned') { collectionValue += d._market * lib.qty; if(lib.paid) totalPaid += lib.paid * lib.qty; collectionCount++; } });
+    
     let roiText = "-"; let roiClass = "text-gray-500";
     if (totalPaid > 0) { const roiVal = ((collectionValue - totalPaid) / totalPaid) * 100; roiText = `ROI: ${roiVal > 0 ? '+' : ''}${roiVal.toFixed(1)}%`; roiClass = roiVal >= 0 ? "text-green-600" : "text-red-500"; }
     safeUpdate('statDBCount', allData.length.toLocaleString()); safeUpdate('statDBValue', `€ ${dbValue.toLocaleString('it-IT', { minimumFractionDigits: 0 })}`);
