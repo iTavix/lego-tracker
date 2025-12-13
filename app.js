@@ -244,7 +244,7 @@ window.renderTable = function(container) {
     table.innerHTML = `
     <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0 text-xs font-bold text-gray-600 dark:text-gray-300 uppercase">
         <tr>
-            <th class="p-3 w-28 text-center">Stato</th><th class="p-3 w-14 text-center">Img</th>
+            <th class="p-3 w-28 text-center">Stato</th><th class="p-3 w-24 text-center">Img</th>
             <th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('cod')">Cod</th><th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('theme')">Tema</th><th class="p-3 cursor-pointer hover:text-blue-500" onclick="window.updateSort('set_name')">Nome</th>
             <th class="p-3 text-right cursor-pointer hover:text-blue-500" onclick="window.updateSort('pieces')" title="Pezzi"><img src="brick.png" class="w-4 h-4 inline"></th>
             <th class="p-3 text-right" title="Minifigs"><img src="testa.png" class="w-4 h-4 inline"></th>
@@ -269,9 +269,10 @@ window.renderTable = function(container) {
         const btnWanted = `<button onclick="window.updateSetStatus(${row.cod}, 'wanted')" class="p-1.5 rounded-md transition ${isWanted ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-300 hover:text-red-500'}"><i data-lucide="heart" class="w-4 h-4"></i></button>`;
         let qtyControls = isOwned ? `<div class="flex items-center gap-1 text-xs font-mono mt-1 justify-center"><button onclick="window.updateQty(${row.cod}, -1)">-</button><span class="font-bold">${lib.qty}</span><button onclick="window.updateQty(${row.cod}, 1)">+</button></div>` : '';
 
+        // UPDATED IMAGE SIZE TO W-20
         tr.innerHTML = `
             <td class="p-3 text-center align-top"><div class="flex justify-center gap-1">${btnOwned}${btnWanted}</div>${qtyControls}</td>
-            <td class="p-3 text-center"><img src="${row._img}" loading="lazy" class="w-10 h-10 object-contain mx-auto cursor-pointer" onclick="window.openSetDetailModal(${row.cod})"></td>
+            <td class="p-3 text-center"><img src="${row._img}" loading="lazy" class="w-20 h-20 object-contain mx-auto cursor-pointer bg-white rounded p-1 border border-gray-200" onclick="window.openSetDetailModal(${row.cod})"></td>
             <td class="p-3 font-mono text-blue-500">${row.cod}</td>
             <td class="p-3"><span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs font-bold">${row.theme}</span></td>
             <td class="p-3 font-medium dark:text-white">${row.set_name} ${row.is_exclusive ? '<i data-lucide="gem" class="w-3 h-3 text-purple-500 inline"></i>' : ''}</td>
@@ -335,6 +336,100 @@ window.renderGrid = function(container) {
     container.appendChild(grid);
 }
 
+// --- MODALS & UPDATES ---
+
+window.openCollectionModal = function(cod) {
+    const lib = userLibrary.get(cod);
+    document.getElementById('collSetCod').value = cod;
+    document.getElementById('collPaidPrice').value = lib ? (lib.paid || 0) : "";
+    document.getElementById('collQty').value = lib ? lib.qty : 1;
+    if (!lib) { const set = allData.find(d => d.cod === cod); if(set) document.getElementById('collPaidPrice').value = set._price; }
+    document.getElementById('collectionModal').classList.remove('hidden');
+}
+
+window.confirmAddToCollection = async function() {
+    const cod = parseInt(document.getElementById('collSetCod').value);
+    const price = parseFloat(document.getElementById('collPaidPrice').value) || 0;
+    const qty = parseInt(document.getElementById('collQty').value) || 1;
+    userLibrary.set(cod, { status: 'owned', qty: qty, paid: price });
+    const { error } = await supabase.from('user_favorites').upsert({ user_email: currentUserEmail, set_cod: cod, status: 'owned', quantity: qty, paid: price }, { onConflict: 'user_email, set_cod' });
+    if (!error) {
+        document.getElementById('collectionModal').classList.add('hidden');
+        window.render(); window.updateDashboardStats(); window.updateCharts();
+        if(typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    } else { alert("Errore salvataggio: " + error.message); }
+}
+
+window.updateSetStatus = async function(cod, status) {
+    if(status === 'owned') { window.openCollectionModal(cod); return; }
+    const current = userLibrary.get(cod);
+    if (current && current.status === status) { userLibrary.delete(cod); await supabase.from('user_favorites').delete().match({ user_email: currentUserEmail, set_cod: cod }); } 
+    else { const newData = { status: status, qty: 1 }; userLibrary.set(cod, newData); await supabase.from('user_favorites').upsert({ user_email: currentUserEmail, set_cod: cod, status: status, quantity: 1 }, { onConflict: 'user_email, set_cod' }); }
+    window.render(); window.updateDashboardStats(); window.updateCharts();
+}
+
+window.updateQty = async function(cod, delta) {
+    const current = userLibrary.get(cod); if (!current) return;
+    let newQty = Math.max(1, current.qty + delta); current.qty = newQty; userLibrary.set(cod, current);
+    await supabase.from('user_favorites').update({ quantity: newQty }).match({ user_email: currentUserEmail, set_cod: cod });
+    window.render(); window.updateDashboardStats(); window.updateCharts();
+}
+
+window.openSetDetailModal = function(cod) {
+    const set = allData.find(d => d.cod === cod); if (!set) return;
+    document.getElementById('detailImg').src = set._img; 
+    document.getElementById('detailCod').innerText = set.cod; 
+    document.getElementById('detailName').innerText = set.set_name;
+    document.getElementById('detailTheme').innerText = set.theme; 
+    document.getElementById('detailMinifigs').innerText = set.minifigs || 0;
+    
+    const piecesLink = document.getElementById('detailPiecesLink');
+    if(piecesLink) { piecesLink.href = `https://www.bricklink.com/catalogItemInv.asp?S=${set.cod}-1`; document.getElementById('detailPieces').innerText = set.pieces; }
+
+    document.getElementById('detailPrice').innerText = set._price > 0 ? `€ ${set._price.toFixed(2)}` : '-'; 
+    document.getElementById('detailMarket').innerText = set._market > 0 ? `€ ${set._market.toFixed(2)}` : '-';
+    document.getElementById('detailRetire').innerText = window.formatDateItalian(set.retirement_date); 
+    document.getElementById('detailLegoLink').href = `https://www.lego.com/it-it/product/${set.cod}`;
+    document.getElementById('detailBricklinkLink').href = `https://www.bricklink.com/v2/catalog/catalogitem.page?S=${set.cod}-1`;
+    document.getElementById('setDetailModal').classList.remove('hidden'); 
+    document.getElementById('setDetailModal').classList.add('flex'); 
+    if(window.lucide) window.lucide.createIcons();
+}
+
+window.closeSetDetailModal = function() { 
+    document.getElementById('setDetailModal').classList.add('hidden'); 
+    document.getElementById('setDetailModal').classList.remove('flex'); 
+}
+
+// --- ADMIN & EDIT ---
+window.openEditSetModal = function(cod) {
+    const set = allData.find(d => d.cod === cod); if(!set) return;
+    document.getElementById('editSetCod').value = set.cod;
+    document.getElementById('editSetTheme').value = set.theme || '';
+    document.getElementById('editSetName').value = set.set_name || '';
+    document.getElementById('editSetPieces').value = set.pieces || 0;
+    document.getElementById('editSetMinifigs').value = set.minifigs || 0;
+    document.getElementById('editSetPrice').value = set._price || '';
+    document.getElementById('editSetMarket').value = set._market || '';
+    document.getElementById('editSetExclusive').checked = set.is_exclusive === true;
+    document.getElementById('editSetRetire').value = set.retirement_date || '';
+    document.getElementById('editSetModal').classList.remove('hidden');
+}
+
+window.saveSetChanges = async function() {
+    const cod = parseInt(document.getElementById('editSetCod').value);
+    const updates = { theme: document.getElementById('editSetTheme').value, set_name: document.getElementById('editSetName').value, pieces: parseInt(document.getElementById('editSetPieces').value || 0), minifigs: parseInt(document.getElementById('editSetMinifigs').value || 0), price: parseFloat(document.getElementById('editSetPrice').value || 0), market_price: parseFloat(document.getElementById('editSetMarket').value || 0), is_exclusive: document.getElementById('editSetExclusive').checked, retirement_date: document.getElementById('editSetRetire').value || null };
+    const { error } = await supabase.from('lego_sets').update(updates).eq('cod', cod);
+    if (error) { alert("Errore: " + error.message); } else { 
+        const idx = allData.findIndex(d => d.cod === cod); 
+        if (idx !== -1) { allData[idx] = { ...allData[idx], ...updates, _price: updates.price, _market: updates.market_price, _date: new Date(updates.retirement_date || '2099-12-31') }; allData[idx]._search = ((updates.set_name || '') + ' ' + cod).toLowerCase(); } 
+        alert("Salvato!"); document.getElementById('editSetModal').classList.add('hidden'); window.applyFilters(); 
+    }
+}
+
+window.deleteSet = async function(cod) { if (currentUserEmail.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return; if (!confirm("Eliminare?")) return; const { error } = await supabase.from('lego_sets').delete().eq('cod', cod); if (error) alert(error.message); else { allData = allData.filter(d => d.cod !== cod); window.applyFilters(); alert("Eliminato."); } }
+
+// --- DASHBOARD & GRAPHS ---
 window.updateDashboardStats = function() {
     let dbValue = 0; let collectionValue = 0; let collectionCount = 0; let totalPaid = 0;
     allData.forEach(d => dbValue += d._market);
@@ -361,18 +456,50 @@ window.openAddSetModal = function() { document.getElementById('addSetModal').cla
 window.closePriceModal = function() { document.getElementById('priceModal').classList.add('hidden'); }
 window.closeWelcomeForUser = function() { document.getElementById('welcomeOverlay').classList.add('hidden'); if(currentUserEmail) localStorage.setItem(`itavix_welcome_seen_${currentUserEmail}`, 'true'); }
 window.openWelcomeOverlay = function() { document.getElementById('welcomeOverlay').classList.remove('hidden'); }
-window.openCollectionModal = function(cod) { const lib = userLibrary.get(cod); document.getElementById('collSetCod').value = cod; document.getElementById('collPaidPrice').value = lib ? (lib.paid || 0) : ""; document.getElementById('collQty').value = lib ? lib.qty : 1; if (!lib) { const set = allData.find(d => d.cod === cod); if(set) document.getElementById('collPaidPrice').value = set._price; } document.getElementById('collectionModal').classList.remove('hidden'); }
-window.confirmAddToCollection = async function() { const cod = parseInt(document.getElementById('collSetCod').value); const price = parseFloat(document.getElementById('collPaidPrice').value) || 0; const qty = parseInt(document.getElementById('collQty').value) || 1; userLibrary.set(cod, { status: 'owned', qty: qty, paid: price }); const { error } = await supabase.from('user_favorites').upsert({ user_email: currentUserEmail, set_cod: cod, status: 'owned', quantity: qty, paid: price }, { onConflict: 'user_email, set_cod' }); if (!error) { document.getElementById('collectionModal').classList.add('hidden'); window.render(); window.updateDashboardStats(); window.updateCharts(); if(typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); } else { alert("Errore salvataggio: " + error.message); } }
-window.updateSetStatus = async function(cod, status) { if(status === 'owned') { window.openCollectionModal(cod); return; } const current = userLibrary.get(cod); if (current && current.status === status) { userLibrary.delete(cod); await supabase.from('user_favorites').delete().match({ user_email: currentUserEmail, set_cod: cod }); } else { const newData = { status: status, qty: 1 }; userLibrary.set(cod, newData); await supabase.from('user_favorites').upsert({ user_email: currentUserEmail, set_cod: cod, status: status, quantity: 1 }, { onConflict: 'user_email, set_cod' }); } window.render(); window.updateDashboardStats(); window.updateCharts(); }
-window.updateQty = async function(cod, delta) { const current = userLibrary.get(cod); if (!current) return; let newQty = Math.max(1, current.qty + delta); current.qty = newQty; userLibrary.set(cod, current); await supabase.from('user_favorites').update({ quantity: newQty }).match({ user_email: currentUserEmail, set_cod: cod }); window.render(); window.updateDashboardStats(); window.updateCharts(); }
-window.openSetDetailModal = function(cod) { const set = allData.find(d => d.cod === cod); if (!set) return; document.getElementById('detailImg').src = set._img; document.getElementById('detailCod').innerText = set.cod; document.getElementById('detailName').innerText = set.set_name; document.getElementById('detailTheme').innerText = set.theme; document.getElementById('detailMinifigs').innerText = set.minifigs || 0; const piecesLink = document.getElementById('detailPiecesLink'); if(piecesLink) { piecesLink.href = `https://www.bricklink.com/catalogItemInv.asp?S=${set.cod}-1`; document.getElementById('detailPieces').innerText = set.pieces; } document.getElementById('detailPrice').innerText = set._price > 0 ? `€ ${set._price.toFixed(2)}` : '-'; document.getElementById('detailMarket').innerText = set._market > 0 ? `€ ${set._market.toFixed(2)}` : '-'; document.getElementById('detailRetire').innerText = window.formatDateItalian(set.retirement_date); document.getElementById('detailLegoLink').href = `https://www.lego.com/it-it/product/${set.cod}`; document.getElementById('detailBricklinkLink').href = `https://www.bricklink.com/v2/catalog/catalogitem.page?S=${set.cod}-1`; document.getElementById('setDetailModal').classList.remove('hidden'); document.getElementById('setDetailModal').classList.add('flex'); if(window.lucide) window.lucide.createIcons(); }
-window.closeSetDetailModal = function() { document.getElementById('setDetailModal').classList.add('hidden'); document.getElementById('setDetailModal').classList.remove('flex'); }
-window.openEditSetModal = function(cod) { const set = allData.find(d => d.cod === cod); if(!set) return; document.getElementById('editSetCod').value = set.cod; document.getElementById('editSetTheme').value = set.theme || ''; document.getElementById('editSetName').value = set.set_name || ''; document.getElementById('editSetPieces').value = set.pieces || 0; document.getElementById('editSetMinifigs').value = set.minifigs || 0; document.getElementById('editSetPrice').value = set._price || ''; document.getElementById('editSetMarket').value = set._market || ''; document.getElementById('editSetExclusive').checked = set.is_exclusive === true; document.getElementById('editSetRetire').value = set.retirement_date || ''; document.getElementById('editSetModal').classList.remove('hidden'); }
-window.saveSetChanges = async function() { const cod = parseInt(document.getElementById('editSetCod').value); const updates = { theme: document.getElementById('editSetTheme').value, set_name: document.getElementById('editSetName').value, pieces: parseInt(document.getElementById('editSetPieces').value || 0), minifigs: parseInt(document.getElementById('editSetMinifigs').value || 0), price: parseFloat(document.getElementById('editSetPrice').value || 0), market_price: parseFloat(document.getElementById('editSetMarket').value || 0), is_exclusive: document.getElementById('editSetExclusive').checked, retirement_date: document.getElementById('editSetRetire').value || null }; const { error } = await supabase.from('lego_sets').update(updates).eq('cod', cod); if (error) { alert("Errore: " + error.message); } else { const idx = allData.findIndex(d => d.cod === cod); if (idx !== -1) { allData[idx] = { ...allData[idx], ...updates, _price: updates.price, _market: updates.market_price, _date: new Date(updates.retirement_date || '2099-12-31') }; allData[idx]._search = ((updates.set_name || '') + ' ' + cod).toLowerCase(); } alert("Salvato!"); document.getElementById('editSetModal').classList.add('hidden'); window.applyFilters(); } }
-window.deleteSet = async function(cod) { if (currentUserEmail.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return; if (!confirm("Eliminare?")) return; const { error } = await supabase.from('lego_sets').delete().eq('cod', cod); if (error) alert(error.message); else { allData = allData.filter(d => d.cod !== cod); window.applyFilters(); alert("Eliminato."); } }
-window.batchUpdateAllData = async function() { if (currentUserEmail.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return; const setsToUpdate = allData.filter(d => !d.set_name || d.pieces === 0 || !d.minifigs || !d.retirement_date || d.minifigs === 0); if (setsToUpdate.length === 0) { alert("Tutti i set sono già completi!"); return; } if(!confirm(`Trovati ${setsToUpdate.length} set con dati incompleti. Vuoi scaricare i dati mancanti?`)) return; const modal = document.getElementById('updateModal'); const progress = document.getElementById('updateProgress'); const status = document.getElementById('updateStatus'); modal.classList.remove('hidden'); let updatedCount = 0; const total = setsToUpdate.length; const proxyUrl = "https://corsproxy.io/?"; for (let i = 0; i < total; i++) { const set = setsToUpdate[i]; status.innerText = `Aggiorno ${set.cod}... (${i + 1}/${total})`; progress.style.width = `${((i + 1) / total) * 100}%`; try { const urlSet = `https://rebrickable.com/api/v3/lego/sets/${set.cod}-1/`; const resSet = await fetch(proxyUrl + encodeURIComponent(urlSet), { headers: { 'Authorization': 'key ' + API_KEY, 'Accept': 'application/json' } }); if (resSet.status === 429) { status.innerText = "Attesa rate limit (60s)..."; await new Promise(r => setTimeout(r, 60000)); i--; continue; } const urlMf = `https://rebrickable.com/api/v3/lego/sets/${set.cod}-1/minifigs/`; const resMf = await fetch(proxyUrl + encodeURIComponent(urlMf), { headers: { 'Authorization': 'key ' + API_KEY, 'Accept': 'application/json' } }); if (resSet.ok) { const dataSet = await resSet.json(); let count = 0; if (resMf.ok) { const dataMf = await resMf.json(); count = dataMf.count || 0; } const updatePayload = { set_name: dataSet.name, pieces: dataSet.num_parts, minifigs: count }; if (dataSet.year && (!set.retirement_date || set.retirement_date === "")) { updatePayload.retirement_date = `${dataSet.year}-12-31`; } await supabase.from('lego_sets').update(updatePayload).eq('cod', set.cod); updatedCount++; } await new Promise(r => setTimeout(r, 1200)); } catch (e) { console.error(`Errore set ${set.cod}`, e); } } modal.classList.add('hidden'); alert(`Finito! Aggiornati ${updatedCount} set.`); window.fetchAllData(); };
-window.addNewSet = async function() { const cod = parseInt(document.getElementById('newSetCod').value); const theme = document.getElementById('newSetTheme').value; const name = document.getElementById('newSetName').value; const pieces = parseInt(document.getElementById('newSetPieces').value || 0); const minifigs = parseInt(document.getElementById('newSetMinifigs').value || 0); const price = parseFloat(document.getElementById('newSetPrice').value || 0); const isExclusive = document.getElementById('newSetExclusive').checked; const date = document.getElementById('newSetDate').value; if (!cod || !name) return alert("Dati mancanti"); const { error } = await supabase.from('lego_sets').insert({ cod, theme, set_name: name, pieces, minifigs, price, market_price: price, is_exclusive: isExclusive, retirement_date: date ? new Date(date).toISOString().split('T')[0] : "" }); if (error) alert("Errore: " + error.message); else { alert("Aggiunto!"); document.getElementById('addSetModal').classList.add('hidden'); window.fetchAllData(); } }
-window.fetchRebrickableData = async function() { const cod = document.getElementById('newSetCod').value; const apiKey = API_KEY; if (!cod) return alert("Inserisci codice"); const btn = event.currentTarget; const originalIcon = btn.innerHTML; btn.innerHTML = '<div class="loader border-white border-t-transparent w-4 h-4"></div>'; btn.disabled = true; try { const proxyUrl = "https://corsproxy.io/?"; const target = `https://rebrickable.com/api/v3/lego/sets/${cod}-1/`; const res = await fetch(proxyUrl + encodeURIComponent(target), { headers: {'Authorization': 'key '+apiKey, 'Accept': 'application/json'} }); if(!res.ok) throw new Error("Non trovato"); const data = await res.json(); document.getElementById('newSetName').value = data.name; document.getElementById('newSetPieces').value = data.num_parts; document.getElementById('newSetDate').value = `${data.year}-12-31`; const targetMf = `https://rebrickable.com/api/v3/lego/sets/${cod}-1/minifigs/`; const resMf = await fetch(proxyUrl + encodeURIComponent(targetMf), { headers: {'Authorization': 'key '+apiKey, 'Accept': 'application/json'} }); if(resMf.ok) { const dm = await resMf.json(); document.getElementById('newSetMinifigs').value = dm.count; } alert(`Trovato: ${data.name}`); } catch(e) { alert(e.message); } finally { btn.innerHTML = originalIcon; btn.disabled = false; if(window.lucide) window.lucide.createIcons(); } };
+window.toggleDashboard = function() { document.getElementById('dashboardPanel').classList.toggle('hidden'); window.updateCharts(); }
+window.batchUpdateAllData = async function() {
+    if (currentUserEmail.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) return;
+    const setsToUpdate = allData.filter(d => !d.set_name || d.pieces === 0 || !d.minifigs || !d.retirement_date || d.minifigs === 0);
+    if (setsToUpdate.length === 0) { alert("Tutti i set sono già completi!"); return; }
+    if(!confirm(`Trovati ${setsToUpdate.length} set con dati incompleti. Vuoi scaricare i dati mancanti?`)) return;
+    const modal = document.getElementById('updateModal'); const progress = document.getElementById('updateProgress'); const status = document.getElementById('updateStatus'); modal.classList.remove('hidden');
+    let updatedCount = 0; const total = setsToUpdate.length; const proxyUrl = "https://corsproxy.io/?";
+    for (let i = 0; i < total; i++) {
+        const set = setsToUpdate[i]; status.innerText = `Aggiorno ${set.cod}... (${i + 1}/${total})`; progress.style.width = `${((i + 1) / total) * 100}%`;
+        try {
+            const urlSet = `https://rebrickable.com/api/v3/lego/sets/${set.cod}-1/`; const resSet = await fetch(proxyUrl + encodeURIComponent(urlSet), { headers: { 'Authorization': 'key ' + API_KEY, 'Accept': 'application/json' } });
+            if (resSet.status === 429) { status.innerText = "Attesa rate limit (60s)..."; await new Promise(r => setTimeout(r, 60000)); i--; continue; }
+            const urlMf = `https://rebrickable.com/api/v3/lego/sets/${set.cod}-1/minifigs/`; const resMf = await fetch(proxyUrl + encodeURIComponent(urlMf), { headers: { 'Authorization': 'key ' + API_KEY, 'Accept': 'application/json' } });
+            if (resSet.ok) {
+                const dataSet = await resSet.json(); let count = 0; if (resMf.ok) { const dataMf = await resMf.json(); count = dataMf.count || 0; }
+                const updatePayload = { set_name: dataSet.name, pieces: dataSet.num_parts, minifigs: count }; if (dataSet.year && (!set.retirement_date || set.retirement_date === "")) { updatePayload.retirement_date = `${dataSet.year}-12-31`; }
+                await supabase.from('lego_sets').update(updatePayload).eq('cod', set.cod); updatedCount++;
+            }
+            await new Promise(r => setTimeout(r, 1200));
+        } catch (e) { console.error(`Errore set ${set.cod}`, e); }
+    }
+    modal.classList.add('hidden'); alert(`Finito! Aggiornati ${updatedCount} set.`); window.fetchAllData();
+};
+window.addNewSet = async function() {
+    const cod = parseInt(document.getElementById('newSetCod').value); const theme = document.getElementById('newSetTheme').value; const name = document.getElementById('newSetName').value;
+    const pieces = parseInt(document.getElementById('newSetPieces').value || 0); const minifigs = parseInt(document.getElementById('newSetMinifigs').value || 0);
+    const price = parseFloat(document.getElementById('newSetPrice').value || 0); const isExclusive = document.getElementById('newSetExclusive').checked; const date = document.getElementById('newSetDate').value;
+    if (!cod || !name) return alert("Dati mancanti");
+    const { error } = await supabase.from('lego_sets').insert({ cod, theme, set_name: name, pieces, minifigs, price, market_price: price, is_exclusive: isExclusive, retirement_date: date ? new Date(date).toISOString().split('T')[0] : "" });
+    if (error) alert("Errore: " + error.message); else { alert("Aggiunto!"); document.getElementById('addSetModal').classList.add('hidden'); window.fetchAllData(); }
+}
+window.fetchRebrickableData = async function() {
+    const cod = document.getElementById('newSetCod').value; const apiKey = API_KEY;
+    if (!cod) return alert("Inserisci codice");
+    const btn = event.currentTarget; const originalIcon = btn.innerHTML; btn.innerHTML = '<div class="loader border-white border-t-transparent w-4 h-4"></div>'; btn.disabled = true;
+    try {
+        const proxyUrl = "https://corsproxy.io/?"; const target = `https://rebrickable.com/api/v3/lego/sets/${cod}-1/`; const res = await fetch(proxyUrl + encodeURIComponent(target), { headers: {'Authorization': 'key '+apiKey, 'Accept': 'application/json'} });
+        if(!res.ok) throw new Error("Non trovato"); const data = await res.json();
+        document.getElementById('newSetName').value = data.name; document.getElementById('newSetPieces').value = data.num_parts; document.getElementById('newSetDate').value = `${data.year}-12-31`;
+        const targetMf = `https://rebrickable.com/api/v3/lego/sets/${cod}-1/minifigs/`; const resMf = await fetch(proxyUrl + encodeURIComponent(targetMf), { headers: {'Authorization': 'key '+apiKey, 'Accept': 'application/json'} });
+        if(resMf.ok) { const dm = await resMf.json(); document.getElementById('newSetMinifigs').value = dm.count; } alert(`Trovato: ${data.name}`);
+    } catch(e) { alert(e.message); } finally { btn.innerHTML = originalIcon; btn.disabled = false; if(window.lucide) window.lucide.createIcons(); }
+};
 window.openPriceModal = function(cod) { currentEditingCod = cod; document.getElementById('modalSetCode').innerText = cod; document.getElementById('bricksetLink').href = `https://brickset.com/sets/${cod}-1`; const set = allData.find(d => d.cod === cod); if (set) { document.getElementById('suggestPrice').value = set._price; document.getElementById('suggestMarketPrice').value = set._market; document.getElementById('editIsExclusive').checked = set.is_exclusive === true; } document.getElementById('suggestSource').value = ''; document.getElementById('modalTitle').innerText = (currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) ? "Aggiorna Dati (Admin)" : "Suggerisci Dati"; document.getElementById('priceModal').classList.remove('hidden'); }
 window.submitSuggestion = async function() { const price = parseFloat(document.getElementById('suggestPrice').value); const market = parseFloat(document.getElementById('suggestMarketPrice').value); const isExcl = document.getElementById('editIsExclusive').checked; const source = document.getElementById('suggestSource').value; if (currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase()) { const updateData = { is_exclusive: isExcl }; if (!isNaN(price)) updateData.price = price; if (!isNaN(market)) updateData.market_price = market; const { error } = await supabase.from('lego_sets').update(updateData).eq('cod', currentEditingCod); if (error) alert("Errore: " + error.message); else { alert("Aggiornato!"); window.closePriceModal(); window.fetchAllData(); } } else { if (!price || !source) return alert("Dati obbligatori"); const { error } = await supabase.from('price_suggestions').insert({ set_cod: currentEditingCod, user_email: currentUserEmail, new_price: price, source: source }); if (error) alert("Errore: " + error.message); else { alert("Inviato!"); window.closePriceModal(); } } }
 window.openAdminPanel = async function() { document.getElementById('adminModal').classList.remove('hidden'); window.loadSuggestions(); }
