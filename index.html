@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iTavix Manager v12.55 (Visual Fix)</title>
+    <title>iTavix Manager v12.57 (Mobile Fix)</title>
     <link rel="icon" type="image/png" href="logo.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,6 +22,9 @@
         .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        /* Utility per nascondere la scrollbar orizzontale su mobile ma permettere lo scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .set-thumb { transition: transform 0.2s ease-in-out; cursor: pointer; background: white; }
         .set-thumb:hover { transform: scale(3.5); z-index: 50; position: relative; border-radius: 4px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); border: 2px solid white; }
         .transition-colors { transition-duration: 200ms; }
@@ -165,12 +168,13 @@
     </div>
 
     <div id="appContent" class="flex flex-col h-full blur-content transition-all duration-500 opacity-50">
-        <header class="flex-none bg-white dark:bg-gray-800 p-3 shadow z-10 flex flex-col md:flex-row gap-3 justify-between items-center border-b dark:border-gray-700">
-            <div class="flex items-center gap-2"><img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-8"><div><h1 class="font-bold text-lg dark:text-white">iTavix</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div></div>
-            <div class="flex gap-2 overflow-x-auto">
+        <header class="flex-none bg-white dark:bg-gray-800 p-4 shadow z-10 flex flex-col md:flex-row gap-4 justify-between items-center border-b dark:border-gray-700">
+            <div class="flex items-center gap-3"><img src="logo.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg'" class="w-10 h-10 object-contain"><div><h1 class="font-bold text-lg dark:text-white">iTavix</h1><p class="text-[10px] text-gray-500 dark:text-gray-400" id="userEmailDisplay">...</p></div></div>
+            <div class="flex gap-2 overflow-x-auto w-full md:w-auto no-scrollbar">
                 <button id="btnUpdateMinifigs" onclick="window.batchUpdateAllData()" class="hidden p-2 bg-orange-100 text-orange-600 rounded-lg hover:bg-orange-200 transition" title="Super Sync"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
                 <button id="btnAddSet" onclick="window.openAddSetModal()" class="hidden p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition" title="Nuovo Set"><i data-lucide="plus" class="w-4 h-4"></i></button>
-                <button id="btnAdmin" onclick="window.openAdminPanel()" class="hidden p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Moderazione"><img src="logo.png" class="w-4 h-4 object-contain"></button>
+                <button id="btnAdmin" onclick="window.openAdminPanel()" class="hidden p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Moderazione"><i data-lucide="shield" class="w-4 h-4"></i></button>
+                
                 <button onclick="window.toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 transition"><i data-lucide="moon" class="w-4 h-4 dark:hidden"></i><i data-lucide="sun" class="w-4 h-4 hidden dark:block text-yellow-400"></i></button>
                 <button onclick="window.toggleDashboard()" class="flex items-center px-3 py-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 rounded-lg hover:bg-purple-200 transition gap-2 text-xs md:text-sm font-bold"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span class="hidden sm:inline">Dash</span></button>
                 <button onclick="window.openWelcomeOverlay()" class="p-2 bg-gray-100 dark:bg-gray-700 text-gray-500 hover:text-blue-500 rounded-lg transition" title="Info"><i data-lucide="help-circle" class="w-4 h-4"></i></button>
@@ -246,7 +250,7 @@
 
     <div id="adminModal" class="fixed inset-0 z-[70] bg-black/50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-2xl h-[80vh] flex flex-col">
-            <div class="flex justify-between items-center mb-4"><h3 class="font-bold dark:text-white">Moderazione</h3><button onclick="document.getElementById('adminModal').classList.add('hidden')" class="text-red-500"><i data-lucide="x"></i></button></div>
+            <div class="flex justify-between mb-4"><h3 class="font-bold dark:text-white">Moderazione</h3><button onclick="document.getElementById('adminModal').classList.add('hidden')" class="text-red-500"><i data-lucide="x"></i></button></div>
             <div class="flex-1 overflow-y-auto custom-scroll"><table class="w-full text-left text-sm"><thead class="bg-gray-100 dark:bg-gray-700 sticky top-0"><tr><th class="p-2">Set</th><th class="p-2">Utente</th><th class="p-2">Prezzo</th><th class="p-2">Fonte</th><th class="p-2">Azioni</th></tr></thead><tbody id="adminTableBody"></tbody></table><p id="noSuggestions" class="text-center mt-4 hidden">Nessun dato.</p></div>
         </div>
     </div>
@@ -608,15 +612,24 @@
         }
         window.approveSuggestion = async function(id, cod, price) { await supabase.from('lego_sets').update({ price: price }).eq('cod', cod); await supabase.from('price_suggestions').update({ status: 'approved' }).eq('id', id); loadSuggestions(); fetchAllData(); }
         window.rejectSuggestion = async function(id) { await supabase.from('price_suggestions').update({ status: 'rejected' }).eq('id', id); loadSuggestions(); }
-        function refreshView() {
-            if (showOnlyExclusives) { filteredData = allData.filter(d => d.is_exclusive === true); document.getElementById('exclBtnText').innerText = "Mostra Tutti"; } 
-            else if (showOnlyCollection) { filteredData = allData.filter(d => userLibrary.has(d.cod)); } 
-            else { applyFilters(); return; }
-            render(); updateDashboardStats(); updateCharts();
+        
+        // --- FUNZIONI DI SUPPORTO PER FILTRI ---
+        function applyFilters() {
+            const s = document.getElementById('searchInput').value.toLowerCase(); 
+            const t = document.getElementById('themeFilter').value; 
+            const y = document.getElementById('yearFilter').value;
+
+            filteredData = allData.filter(d => {
+                const baseMatch = d._search.includes(s) && (t === 'all' || d.theme === t) && (y === 'all' || d._date.getFullYear().toString() === y);
+                if (showOnlyExclusives) return baseMatch && d.is_exclusive === true;
+                if (showOnlyCollection) return baseMatch && userLibrary.has(d.cod);
+                return baseMatch;
+            });
+            render(); 
+            updateDashboardStats(); 
+            updateCharts();
         }
-        function toggleExclusives() {
-            showOnlyExclusives = !showOnlyExclusives; showOnlyCollection = false;
-            document.getElementById('btnToggleExcl').className = showOnlyExclusives ? "p-2 bg-indigo-600 text-white rounded flex items-center gap-1 font-bold text-xs" : "p-2 bg-indigo-100 text-indigo-800 rounded flex items-center gap-1 font-bold text-xs"; applyFilters(); }
+
         async function fetchAllData() {
             const loader = document.getElementById('tableLoader'); loader.classList.remove('hidden');
             let allRows = []; let from = 0; const step = 1000; let keep = true;
@@ -664,16 +677,6 @@
             document.getElementById('themeFilter').innerHTML = '<option value="all">Tutti i Temi</option>' + themes.map(t => `<option value="${t}">${t}</option>`).join(''); document.getElementById('yearFilter').innerHTML = '<option value="all">Tutti gli Anni</option>' + years.map(y => `<option value="${y}">${y}</option>`).join(''); document.getElementById('newSetTheme').innerHTML = '<option value="">Seleziona...</option>' + themes.map(t => `<option value="${t}">${t}</option>`).join('');
             applyFilters();
         }
-        function applyFilters() {
-            const s = document.getElementById('searchInput').value.toLowerCase(); const t = document.getElementById('themeFilter').value; const y = document.getElementById('yearFilter').value;
-            filteredData = allData.filter(d => {
-                const baseMatch = d._search.includes(s) && (t === 'all' || d.theme === t) && (y === 'all' || d._date.getFullYear().toString() === y);
-                if (showOnlyExclusives) return baseMatch && d.is_exclusive === true;
-                if (showOnlyCollection) return baseMatch && userLibrary.has(d.cod);
-                return baseMatch;
-            });
-            render(); updateDashboardStats(); updateCharts();
-        }
         function toggleDashboard() { document.getElementById('dashboardPanel').classList.toggle('hidden'); fetchGlobalStats(); }
         function updateDashboardStats() {
             let dbValue = 0; let collectionValue = 0; let collectionCount = 0;
@@ -685,9 +688,6 @@
         }
         // --- SEPARATE FETCH FOR GLOBAL STATS TO ENSURE CHARTS WORK ---
         async function fetchGlobalStats() {
-            // Re-fetch essential data for charts if needed, or rely on allData if pagination is not used.
-            // Since we reverted to "loading all data" approach (v12.21 style), updateDashboardStats is enough.
-            // But let's ensure Charts have data.
             updateCharts(); 
         }
 
@@ -715,7 +715,7 @@
                 const dateDisplay = formatDateItalian(row.retirement_date); const exclIcon = row.is_exclusive ? '<i data-lucide="gem" class="w-3.5 h-3.5 text-purple-500 inline ml-1" title="Esclusiva"></i>' : '';
                 let mfDisplay = `<span class="text-gray-300">-</span>`; if (row.minifigs && row.minifigs > 0) { mfDisplay = `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800 font-bold text-xs"><img src="testa.png" class="w-3 h-3 object-contain inline mr-1" alt="mf">${row.minifigs}</span>`; }
                 
-                // --- MODIFICA QUI PER IL PULSANTE EDIT ---
+                // --- NEW ACTION BUTTONS ---
                 const actionButtons = `
                     <div class="flex justify-center gap-1">
                         <button onclick="window.openEditSetModal(${row.cod})" class="text-gray-300 hover:text-blue-500" title="Modifica"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
