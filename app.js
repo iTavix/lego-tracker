@@ -9,8 +9,7 @@ let supabase;
 let allData = [];
 let filteredData = [];
 let userLibrary = new Map();
-// MODIFICA 1: Ordinamento di default per TEMA
-let currentSort = { key: 'theme', direction: 'asc' };
+let currentSort = { key: 'theme', direction: 'asc' }; // Default sort by Theme
 let showOnlyCollection = false;
 let showOnlyExclusives = false;
 let currentUserEmail = "";
@@ -151,6 +150,8 @@ window.loadLastUpdateDate = async function() {
     if (data) safeUpdate('lastUpdateDate', new Date(data.value).toLocaleDateString('it-IT')); 
 }
 
+// --- UI LOGIC ---
+
 window.toggleViewMode = function() {
     viewMode = viewMode === 'table' ? 'grid' : 'table';
     document.getElementById('viewIcon').setAttribute('data-lucide', viewMode === 'table' ? 'layout-grid' : 'list');
@@ -239,7 +240,7 @@ window.render = function() {
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
 }
 
-// MODIFICA 2: Aggiunta classe min-w-[90px] alla th dell'immagine
+// FIXED: Added whitespace-nowrap to Price, Market and Retire columns
 window.renderTable = function(container) {
     const table = document.createElement('table');
     table.className = "w-full text-left text-sm min-w-[900px]";
@@ -284,9 +285,9 @@ window.renderTable = function(container) {
             <td class="p-3 font-medium dark:text-white">${row.set_name} ${row.is_exclusive ? '<i data-lucide="gem" class="w-3 h-3 text-purple-500 inline"></i>' : ''}</td>
             <td class="p-3 text-right text-gray-500">${row.pieces}</td>
             <td class="p-3 text-right">${row.minifigs > 0 ? `<span class="bg-yellow-100 px-1 rounded text-xs font-bold text-yellow-800 flex items-center justify-end gap-1"><img src="testa.png" class="w-3 h-3">${row.minifigs}</span>` : '-'}</td>
-            <td class="p-3 text-right font-bold dark:text-white">€ ${row._price.toFixed(2)}</td>
-            <td class="p-3 text-right ${marketClass}">€ ${row._market.toFixed(2)}</td>
-            <td class="p-3 text-right"><span class="${retireClass}">${window.formatDateItalian(row.retirement_date)}</span></td>
+            <td class="p-3 text-right font-bold dark:text-white whitespace-nowrap">€ ${row._price.toFixed(2)}</td>
+            <td class="p-3 text-right ${marketClass} whitespace-nowrap">€ ${row._market.toFixed(2)}</td>
+            <td class="p-3 text-right whitespace-nowrap"><span class="${retireClass}">${window.formatDateItalian(row.retirement_date)}</span></td>
             <td class="p-3 text-center">
                 <div class="flex justify-center gap-1">
                     <button onclick="window.openEditSetModal(${row.cod})" class="text-gray-400 hover:text-blue-500"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
