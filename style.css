@@ -1,0 +1,30 @@
+body { font-family: 'Inter', sans-serif; }
+.blur-content { filter: blur(5px); pointer-events: none; user-select: none; }
+.loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #2563eb; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.set-thumb { transition: transform 0.2s ease-in-out; cursor: pointer; background: white; }
+.set-thumb:hover { transform: scale(3.5); z-index: 50; position: relative; border-radius: 4px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); border: 2px solid white; }
+.transition-colors { transition-duration: 200ms; }
+header { flex-shrink: 0; }
+.lego-bg { background-image: url('https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80'); background-size: cover; background-position: center; }
+.fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+/* Grid View Cards */
+.lego-card {
+    transition: all 0.2s ease;
+    animation: flyIn 0.4s ease-out forwards;
+}
+.lego-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+@keyframes flyIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
